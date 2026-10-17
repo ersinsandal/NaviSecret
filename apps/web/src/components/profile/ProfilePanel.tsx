@@ -16,7 +16,7 @@ const DURATION_OPTIONS = [
 
 export default function ProfilePanel() {
   const core = useSdk()
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const { t } = useI18n()
 
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -166,6 +166,12 @@ export default function ProfilePanel() {
     }
   }
 
+  async function handleSignOut() {
+    try {
+      await signOut()
+    } catch {}
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-2 text-slate-500 font-mono text-xs">
@@ -270,12 +276,26 @@ export default function ProfilePanel() {
             <p className="text-xs text-slate-500 font-mono">
               @{profile?.username || user?.username || user?.email?.split('@')[0] || 'operative'}
             </p>
-            <button
-              onClick={() => setEditing(true)}
-              className="mt-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-colors cursor-pointer"
-            >
-              {t('profile.editProfile')}
-            </button>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition-colors cursor-pointer"
+              >
+                {t('profile.editProfile')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 transition-colors cursor-pointer flex items-center gap-1.5"
+                title={t('profile.signOut')}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>{t('profile.signOut')}</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -451,6 +471,37 @@ export default function ProfilePanel() {
             })}
           </div>
         )}
+      </div>
+
+      {/* Account & Session Management */}
+      <div className="p-4 rounded-2xl bg-white/90 border border-slate-200 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <NaviIcon.Profile size={14} className="text-slate-600" />
+            <span>{t('settings.account')}</span>
+          </h3>
+          <span className="text-[10px] font-mono font-bold text-[#00B894] bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+            #{userUniqueCode}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <div className="min-w-0">
+            <p className="text-[11px] text-slate-500">{t('settings.signedInAs')}</p>
+            <p className="font-semibold text-slate-800 truncate">
+              {user?.email ?? user?.username ?? profile?.username ?? 'NaviSecret Explorer'}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 hover:text-rose-700 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>{t('profile.signOut')}</span>
+        </button>
       </div>
     </div>
   )
