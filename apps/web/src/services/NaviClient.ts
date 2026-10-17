@@ -71,9 +71,42 @@ export class NaviClient implements LocationCore {
       }
     } catch {}
 
+    // Clean up if stored token is already expired
+    if (this.token && this.isTokenExpired(this.token)) {
+      this.clearSession();
+    }
+
     if (this.token) {
       this.connectWebSocket();
     }
+  }
+
+  public isTokenExpired(token: string): boolean {
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(atob(base64));
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+          return true;
+        }
+      }
+    } catch {}
+    return false;
+  }
+
+  public clearSession(): void {
+    this.token = null;
+    this.currentUser = null;
+    try {
+      localStorage.removeItem('navisecret_token');
+      localStorage.removeItem('navisecret_user');
+    } catch {}
+    if (this.ws) {
+      try { this.ws.close(); } catch {}
+      this.ws = null;
+    }
+    this.notifyAuth('SIGNED_OUT');
   }
 
   // ==========================================
@@ -98,6 +131,13 @@ export class NaviClient implements LocationCore {
         const errorJson = await res.json();
         errorMsg = errorJson.message || errorJson.error || errorMsg;
       } catch {}
+
+      // Automatically clear stale or expired session on 401 Unauthorized
+      if (res.status === 401 && this.token) {
+        console.warn('[NaviClient] 401 Unauthorized encountered. Clearing invalid or expired session.');
+        this.clearSession();
+      }
+
       throw new Error(errorMsg);
     }
 
@@ -128,7 +168,13 @@ export class NaviClient implements LocationCore {
 
       this.ws.onmessage = (event) => {
         try {
-          const { event: evtName, data } = JSON.parse(event.data);
+          const parsed = JSON.parse(event.data);
+          if (parsed.event === 'AUTH_FAILED') {
+            console.warn('[NaviClient] WebSocket authentication failed. Clearing invalid session.');
+            this.clearSession();
+            return;
+          }
+          const { event: evtName, data } = parsed;
           if (evtName && this.eventListeners.has(evtName)) {
             for (const handler of this.eventListeners.get(evtName)!) {
               try {
@@ -239,15 +285,7 @@ export class NaviClient implements LocationCore {
     },
 
     signOut: async () => {
-      this.token = null;
-      this.currentUser = null;
-      localStorage.removeItem('navisecret_token');
-      localStorage.removeItem('navisecret_user');
-      if (this.ws) {
-        this.ws.close();
-        this.ws = null;
-      }
-      this.notifyAuth('SIGNED_OUT');
+      this.clearSession();
       return { error: null };
     },
 
@@ -256,10 +294,15 @@ export class NaviClient implements LocationCore {
         return { data: { session: null }, error: null };
       }
 
-      // Try fetching fresh profile if needed
-      if (!this.currentUser) {
-        try {
-          const res = await this.request('/users/me');
+      if (this.isTokenExpired(this.token)) {
+        this.clearSession();
+        return { data: { session: null }, error: null };
+      }
+
+      // Verify and refresh user profile with backend
+      try {
+        const res = await this.request('/users/me');
+        if (res.user) {
           this.currentUser = {
             ...res.user,
             user_metadata: {
@@ -268,19 +311,21 @@ export class NaviClient implements LocationCore {
               username: res.user.username,
             },
           };
-          localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
-        } catch {
-          this.token = null;
-          this.currentUser = null;
-          localStorage.removeItem('navisecret_token');
-          localStorage.removeItem('navisecret_user');
+          try {
+            localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
+          } catch {}
+        }
+      } catch (err: any) {
+        // If unauthorized or token rejected, clear session
+        if (err.message?.includes('401') || err.message?.includes('token') || err.message?.includes('UNAUTHORIZED')) {
+          this.clearSession();
           return { data: { session: null }, error: null };
         }
       }
 
       return {
         data: {
-          session: { access_token: this.token, user: this.currentUser },
+          session: this.token && this.currentUser ? { access_token: this.token, user: this.currentUser } : null,
         },
         error: null,
       };

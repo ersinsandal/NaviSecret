@@ -100,12 +100,16 @@ export async function buildApp() {
       try {
         const msg = JSON.parse(raw.toString());
         if (msg.type === 'auth' && msg.token) {
-          const payload = verifyToken(msg.token);
-          if (payload?.userId) {
-            currentUserId = payload.userId;
-            realtimeHub.register(currentUserId, socket);
-            socket.send(JSON.stringify({ event: 'AUTHENTICATED', data: { userId: currentUserId } }));
-          } else {
+          try {
+            const payload = verifyToken(msg.token);
+            if (payload?.userId) {
+              currentUserId = payload.userId;
+              realtimeHub.register(currentUserId, socket);
+              socket.send(JSON.stringify({ event: 'AUTHENTICATED', data: { userId: currentUserId } }));
+            } else {
+              socket.send(JSON.stringify({ event: 'AUTH_FAILED', error: 'Invalid or expired token' }));
+            }
+          } catch {
             socket.send(JSON.stringify({ event: 'AUTH_FAILED', error: 'Invalid or expired token' }));
           }
         } else if (msg.type === 'ping') {
