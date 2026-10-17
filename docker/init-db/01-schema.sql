@@ -118,6 +118,8 @@ CREATE TABLE IF NOT EXISTS secret_capsules (
     encrypted_payload TEXT NOT NULL,
     salt_entropy VARCHAR(64) NOT NULL,
     unlock_radius_m REAL DEFAULT 50.0,
+    requires_passcode BOOLEAN DEFAULT FALSE,
+    passcode_hint TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

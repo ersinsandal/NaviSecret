@@ -21,6 +21,12 @@ export async function capsuleRoutes(app: FastifyInstance): Promise<void> {
     } = request.body as any;
     const userId = request.user!.userId;
 
+    // Verify user exists in active database
+    const user = await queryOne('SELECT id FROM app_users WHERE id = $1', [userId]);
+    if (!user) {
+      return reply.status(401).send({ error: 'UNAUTHORIZED', message: 'User account session not found. Please log in again.' });
+    }
+
     if (!latitude || !longitude || !encryptedPayload || !saltEntropy) {
       return reply.status(400).send({ error: 'BAD_REQUEST', message: 'Missing required capsule parameters' });
     }

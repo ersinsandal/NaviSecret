@@ -145,9 +145,19 @@ function getSqliteDb(): DatabaseSync {
       user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
       cell_token TEXT NOT NULL,
       visit_count INTEGER DEFAULT 1,
+      unveiled_at TEXT DEFAULT (datetime('now')),
       first_visited_at TEXT DEFAULT (datetime('now')),
       last_visited_at TEXT DEFAULT (datetime('now')),
       UNIQUE (user_id, cell_token)
+    );
+
+    CREATE TABLE IF NOT EXISTS footprint_points (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      accuracy_meters REAL,
+      recorded_at TEXT DEFAULT (datetime('now'))
     );
 
     CREATE TABLE IF NOT EXISTS pulse_history (
@@ -178,6 +188,9 @@ function getSqliteDb(): DatabaseSync {
   try {
     sqliteDb.exec(`ALTER TABLE secret_capsules ADD COLUMN passcode_hint TEXT;`);
   } catch {}
+  try {
+    sqliteDb.exec(`ALTER TABLE unveiled_territories ADD COLUMN unveiled_at TEXT DEFAULT (datetime('now'));`);
+  } catch {}
 
   console.log(`[Database] Resilient embedded SQLite storage initialized at: ${dbPath}`);
   return sqliteDb;
@@ -195,6 +208,9 @@ function runSqliteQuery<T = any>(text: string, params: any[] = []): T[] {
       positionalParams.push(val === undefined ? null : val);
       return '?';
     })
+    .replace(/\bNOW\(\)\s*-\s*INTERVAL\s*'(\d+)\s*days'/gi, "datetime('now', '-$1 days')")
+    .replace(/\bNOW\(\)\s*-\s*INTERVAL\s*'(\d+)\s*hours'/gi, "datetime('now', '-$1 hours')")
+    .replace(/\bNOW\(\)\s*-\s*INTERVAL\s*'(\d+)\s*minutes'/gi, "datetime('now', '-$1 minutes')")
     .replace(/\bNOW\(\)/gi, "datetime('now')")
     .replace(/\bILIKE\b/gi, 'LIKE');
 
@@ -210,9 +226,41 @@ function runSqliteQuery<T = any>(text: string, params: any[] = []): T[] {
   }
 }
 
+let lastPostgresAttempt = 0;
+async function checkPostgres(): Promise<boolean> {
+  const now = Date.now();
+  if (postgresHealthy === false && now - lastPostgresAttempt < 5000) {
+    return false;
+  }
+  lastPostgresAttempt = now;
+
+  try {
+    const client = await pool.connect();
+    try {
+      // Ensure required column migrations are applied on PostgreSQL
+      await client.query(`
+        ALTER TABLE secret_capsules ADD COLUMN IF NOT EXISTS requires_passcode BOOLEAN DEFAULT FALSE;
+        ALTER TABLE secret_capsules ADD COLUMN IF NOT EXISTS passcode_hint TEXT;
+        ALTER TABLE unveiled_territories ADD COLUMN IF NOT EXISTS unveiled_at TIMESTAMPTZ DEFAULT NOW();
+      `);
+      if (postgresHealthy !== true) {
+        console.log('[Database] PostgreSQL connected and schemas verified on port 5433');
+      }
+      postgresHealthy = true;
+      return true;
+    } finally {
+      client.release();
+    }
+  } catch (err: any) {
+    postgresHealthy = false;
+    return false;
+  }
+}
+
 export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
-  // If PostgreSQL was already confirmed healthy, use it
-  if (postgresHealthy === true) {
+  const isHealthy = postgresHealthy === true || await checkPostgres();
+
+  if (isHealthy) {
     try {
       const client = await pool.connect();
       try {
@@ -222,29 +270,18 @@ export async function query<T = any>(text: string, params?: any[]): Promise<T[]>
         client.release();
       }
     } catch (err: any) {
-      console.warn('[Database] PostgreSQL query error, falling back to SQLite:', err.message);
-      postgresHealthy = false;
-      return runSqliteQuery<T>(text, params);
+      // If it's a connectivity issue, mark unhealthy and fallback to SQLite
+      if (err.code === 'ECONNREFUSED' || err.code === '57P01' || err.code === '08006' || err.message?.includes('Connection terminated')) {
+        console.warn('[Database] PostgreSQL connection dropped, falling back to SQLite:', err.message);
+        postgresHealthy = false;
+        return runSqliteQuery<T>(text, params);
+      }
+      // Re-throw genuine SQL application errors
+      throw err;
     }
   }
 
-  // If PostgreSQL was not tested yet, try once
-  if (postgresHealthy === null) {
-    try {
-      const client = await pool.connect();
-      client.release();
-      postgresHealthy = true;
-      console.log('[Database] PostgreSQL connected successfully on port 5433');
-      const res = await pool.query(text, params);
-      return res.rows as T[];
-    } catch {
-      postgresHealthy = false;
-      console.warn('[Database] PostgreSQL not reachable. Operating in resilient embedded SQLite mode.');
-      return runSqliteQuery<T>(text, params);
-    }
-  }
-
-  // Fallback mode is active
+  // Fallback SQLite mode is active
   return runSqliteQuery<T>(text, params);
 }
 
