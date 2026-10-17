@@ -38,13 +38,14 @@ import { calculateDistance, encodeGeohash, decodeGeohash, estimateMotionType } f
 export interface NaviUser {
   id: string;
   email: string;
-  username?: string;
-  display_name?: string;
-  avatar_url?: string;
-  status_emoji?: string;
-  status_text?: string;
+  username?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  status_emoji?: string | null;
+  status_text?: string | null;
   is_casper?: boolean;
   casper_until?: string | null;
+  user_code?: string;
   created_at?: string;
   user_metadata?: Record<string, any>;
 }
@@ -391,14 +392,37 @@ export class NaviClient implements LocationCore {
   // LocationCore Implementation (All 62 Methods)
   // ==========================================
 
+  // Current user helper
+  public async getCurrentUser(): Promise<NaviUser | null> {
+    if (this.currentUser) return this.currentUser;
+    if (!this.token) return null;
+    try {
+      const res = await this.request('/users/me');
+      if (res.user) {
+        this.currentUser = {
+          ...res.user,
+          user_metadata: {
+            display_name: res.user.display_name,
+            avatar_url: res.user.avatar_url,
+            username: res.user.username,
+          },
+        };
+        try {
+          localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
+        } catch {}
+        return this.currentUser;
+      }
+    } catch {}
+    return null;
+  }
+
   // 1. Profiles & Avatars
   public async getProfile(userId?: string): Promise<Profile | null> {
-    const target = userId || this.currentUser?.id;
-    if (!target) return null;
     try {
       const res = await this.request(userId ? `/users/${userId}/profile` : '/users/me');
       const u = res.profile || res.user;
-      return {
+      if (!u) return null;
+      const normalized: Profile = {
         user_id: u.id || u.user_id,
         username: u.username || '',
         display_name: u.display_name || '',
@@ -406,10 +430,18 @@ export class NaviClient implements LocationCore {
         status_emoji: u.status_emoji || null,
         status_text: u.status_text || null,
         status_expires_at: u.status_expires_at || null,
+        user_code: u.user_code || `NS-${(u.id || u.user_id || '').slice(0, 8).toUpperCase()}`,
         is_casper: u.is_casper || false,
         created_at: u.created_at || new Date().toISOString(),
         updated_at: u.updated_at || new Date().toISOString(),
       } as any;
+      if (!userId && this.currentUser) {
+        this.currentUser = { ...this.currentUser, ...normalized };
+        try {
+          localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
+        } catch {}
+      }
+      return normalized;
     } catch {
       return null;
     }
@@ -421,12 +453,26 @@ export class NaviClient implements LocationCore {
       body: JSON.stringify(profile),
     });
     const updated = res.user || res.profile;
-    if (this.currentUser && updated) {
-      this.currentUser = { ...this.currentUser, ...updated };
-      localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
+    const normalized: Profile = {
+      user_id: updated.id || updated.user_id || this.currentUser?.id,
+      username: updated.username || '',
+      display_name: updated.display_name || '',
+      avatar_url: updated.avatar_url || null,
+      status_emoji: updated.status_emoji || null,
+      status_text: updated.status_text || null,
+      status_expires_at: updated.status_expires_at || null,
+      user_code: updated.user_code || `NS-${(updated.id || updated.user_id || '').slice(0, 8).toUpperCase()}`,
+      created_at: updated.created_at || new Date().toISOString(),
+      updated_at: updated.updated_at || new Date().toISOString(),
+    } as any;
+    if (this.currentUser) {
+      this.currentUser = { ...this.currentUser, ...normalized };
+      try {
+        localStorage.setItem('navisecret_user', JSON.stringify(this.currentUser));
+      } catch {}
       this.notifyAuth('USER_UPDATED');
     }
-    return updated;
+    return normalized;
   }
 
   public async searchProfiles(query: string): Promise<Profile[]> {
@@ -438,6 +484,7 @@ export class NaviClient implements LocationCore {
       avatar_url: u.avatar_url,
       status_emoji: u.status_emoji,
       status_text: u.status_text,
+      user_code: u.user_code,
     }));
   }
 
@@ -611,6 +658,11 @@ export class NaviClient implements LocationCore {
   }
 
   // 3. Sharing Rules & Expiry
+  public async getShareRules(): Promise<{ viewer_id: string; level: ShareLevel; expires_at: string | null }[]> {
+    const res = await this.request('/privacy/rules');
+    return res.rules || [];
+  }
+
   public async allow(viewerId: string, level?: ShareLevel): Promise<void> {
     await this.request('/privacy/rules', {
       method: 'POST',

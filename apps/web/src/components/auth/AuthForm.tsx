@@ -10,6 +10,7 @@ export default function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +22,7 @@ export default function AuthForm() {
 
     try {
       if (isSignUp) {
-        await signUp(email, password);
+        await signUp(email, password, { displayName, username });
       } else {
         await signIn(email, password);
       }
@@ -99,18 +100,33 @@ export default function AuthForm() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
           {isSignUp && (
-            <div>
-              <label className="text-[11px] font-semibold text-slate-700 mb-1 block">
-                {t('auth.displayNameLabel')}
-              </label>
-              <input
-                type="text"
-                placeholder={t('auth.displayNamePlaceholder')}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-xs bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#00B894] focus:ring-2 focus:ring-[#00B894]/20 transition-all font-sans"
-              />
-            </div>
+            <>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-700 mb-1 block">
+                  {t('profile.username') || 'Kullanıcı Adı'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="örn: ersinsandal"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                  className="w-full rounded-xl px-4 py-3 text-xs bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#00B894] focus:ring-2 focus:ring-[#00B894]/20 transition-all font-sans"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-slate-700 mb-1 block">
+                  {t('auth.displayNameLabel')}
+                </label>
+                <input
+                  type="text"
+                  placeholder={t('auth.displayNamePlaceholder')}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-xs bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#00B894] focus:ring-2 focus:ring-[#00B894]/20 transition-all font-sans"
+                />
+              </div>
+            </>
           )}
 
           <div>

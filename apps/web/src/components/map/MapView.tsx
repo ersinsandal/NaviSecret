@@ -278,7 +278,7 @@ export default function MapView({
     const fetchFriends = async () => {
       try {
         const data = await sdk.getVisibleFriends();
-        const user = await (sdk as any).getCurrentUser?.() || (await sdk.supabase.auth.getUser()).data.user;
+        const user = await (sdk as any).getCurrentUser?.();
         const othersOnly = user ? data.filter((f) => f.user_id !== user.id) : data;
         if (!cancelled) {
           setFriends(othersOnly);

@@ -20,14 +20,15 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     }
 
     const passwordHash = await hashPassword(password);
-    const generatedUsername = username || email.split('@')[0] + '_' + Date.now().toString(36);
+    const generatedUsername = username || email.split('@')[0] + '_' + Date.now().toString(36).slice(-4);
     const generatedDisplayName = displayName || username || email.split('@')[0];
+    const userCode = 'NS-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
     const newUser = await queryOne(
-      `INSERT INTO app_users (email, password_hash, username, display_name)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, email, username, display_name, avatar_url, status_emoji, status_text, is_casper, created_at`,
-      [email, passwordHash, generatedUsername, generatedDisplayName]
+      `INSERT INTO app_users (email, password_hash, username, display_name, user_code)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, email, username, display_name, avatar_url, status_emoji, status_text, is_casper, user_code, created_at`,
+      [email, passwordHash, generatedUsername, generatedDisplayName, userCode]
     );
 
     // Initialize user settings
@@ -45,7 +46,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     }
 
     const user = await queryOne(
-      'SELECT id, email, password_hash, username, display_name, avatar_url, status_emoji, status_text, is_casper FROM app_users WHERE email = $1',
+      'SELECT id, email, password_hash, username, display_name, avatar_url, status_emoji, status_text, is_casper, user_code FROM app_users WHERE email = $1',
       [email]
     );
 
@@ -66,7 +67,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   // 3. Current User Profile (/auth/me and /users/me)
   const getMeHandler = async (request: any, reply: any) => {
     const user = await queryOne(
-      'SELECT id, email, username, display_name, avatar_url, status_emoji, status_text, status_expires_at, is_casper, casper_until FROM app_users WHERE id = $1',
+      'SELECT id, email, username, display_name, avatar_url, status_emoji, status_text, status_expires_at, is_casper, casper_until, user_code FROM app_users WHERE id = $1',
       [request.user!.userId]
     );
     if (!user) return reply.status(404).send({ error: 'NOT_FOUND', message: 'User not found' });
@@ -85,7 +86,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
            avatar_url = COALESCE($3, avatar_url),
            updated_at = NOW()
        WHERE id = $4
-       RETURNING id, email, username, display_name, avatar_url, status_emoji, status_text, is_casper`,
+       RETURNING id, email, username, display_name, avatar_url, status_emoji, status_text, is_casper, user_code`,
       [username, display_name, avatar_url, request.user!.userId]
     );
     return reply.send({ success: true, user: updated });
@@ -93,7 +94,13 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
 
   // 5. Update Status
   app.put('/users/me/status', { preHandler: [authenticate] }, async (request, reply) => {
-    const { emoji, text, expiresAt } = request.body as any;
+    const body = request.body as any;
+    const emoji = body.emoji ?? body.status_emoji ?? '⚡';
+    const text = body.text ?? body.status_text ?? null;
+    let expiresAt = body.expiresAt ?? body.status_expires_at ?? null;
+    if (!expiresAt && body.duration_minutes) {
+      expiresAt = new Date(Date.now() + body.duration_minutes * 60000).toISOString();
+    }
     await query(
       `UPDATE app_users
        SET status_emoji = $1, status_text = $2, status_expires_at = $3, updated_at = NOW()
@@ -123,8 +130,11 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   // 8. Public Profile Lookup
   app.get('/users/:id/profile', async (request, reply) => {
     const { id } = request.params as any;
+    if (!id || id === 'undefined' || id === 'null') {
+      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'Invalid user ID' });
+    }
     const user = await queryOne(
-      'SELECT id, username, display_name, avatar_url, status_emoji, status_text, status_expires_at, is_casper, created_at FROM app_users WHERE id = $1',
+      'SELECT id, username, display_name, avatar_url, status_emoji, status_text, status_expires_at, is_casper, user_code, created_at FROM app_users WHERE id = $1',
       [id]
     );
     if (!user) return reply.status(404).send({ error: 'NOT_FOUND', message: 'Profile not found' });
@@ -136,9 +146,9 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     const { q } = request.query as any;
     if (!q || typeof q !== 'string') return reply.send({ success: true, results: [] });
     const results = await query(
-      `SELECT id as user_id, username, display_name, avatar_url, status_emoji, status_text
+      `SELECT id as user_id, username, display_name, avatar_url, status_emoji, status_text, user_code
        FROM app_users
-       WHERE id != $1 AND (username ILIKE $2 OR display_name ILIKE $2)
+       WHERE id != $1 AND (username ILIKE $2 OR display_name ILIKE $2 OR user_code ILIKE $2)
        LIMIT 20`,
       [request.user!.userId, `%${q}%`]
     );

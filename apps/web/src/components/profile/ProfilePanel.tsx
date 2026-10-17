@@ -45,14 +45,44 @@ export default function ProfilePanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [core])
 
+  const [copied, setCopied] = useState(false)
+
+  const userUniqueCode = 
+    (profile as any)?.user_code || 
+    (user as any)?.user_code || 
+    (profile?.user_id ? `NS-${profile.user_id.replace(/-/g, '').slice(0, 8).toUpperCase()}` : '') ||
+    (user?.id ? `NS-${user.id.replace(/-/g, '').slice(0, 8).toUpperCase()}` : 'NS-USER')
+
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(userUniqueCode)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   async function loadProfile() {
     try {
       setLoading(true)
       const p = await core.getProfile()
-      setProfile(p)
       if (p) {
+        setProfile(p)
         setUsername(p.username ?? '')
         setDisplayName(p.display_name ?? '')
+      } else if (user) {
+        const fb: any = {
+          user_id: user.id,
+          username: user.username || user.email.split('@')[0],
+          display_name: user.display_name || user.email.split('@')[0],
+          avatar_url: user.avatar_url || null,
+          status_emoji: user.status_emoji || null,
+          status_text: user.status_text || null,
+          status_expires_at: null,
+          user_code: (user as any).user_code || `NS-${user.id.replace(/-/g, '').slice(0, 8).toUpperCase()}`,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+        setProfile(fb)
+        setUsername(fb.username)
+        setDisplayName(fb.display_name)
       }
     } catch (e: any) {
       setError(e.message)
@@ -152,9 +182,18 @@ export default function ProfilePanel() {
     <div className="flex flex-col gap-4 p-4 overflow-y-auto">
       {/* Profile Header Card */}
       <div className="p-4 rounded-2xl bg-white/90 border border-slate-200 shadow-xs flex flex-col items-center gap-3 relative overflow-hidden">
-        <div className="absolute top-2.5 right-2.5 text-[10px] font-mono font-semibold text-[#00B894] bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
-          ID: {profile?.user_id ? profile.user_id.slice(0, 8) : 'ANON'}
-        </div>
+        <button
+          type="button"
+          onClick={handleCopyId}
+          className="absolute top-2.5 right-2.5 text-[11px] font-mono font-bold text-[#00B894] bg-teal-50 hover:bg-teal-100 active:scale-95 px-3 py-1 rounded-full border border-teal-200 shadow-2xs flex items-center gap-1.5 cursor-pointer transition-all"
+          title="Benzersiz Kimlik Kodu (Kopyalamak için tıklayın)"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00B894] animate-pulse" />
+          <span>ID: #{userUniqueCode}</span>
+          <span className="text-[10px] text-teal-600 font-sans font-medium">
+            {copied ? '✓ Kopyalandı' : '📋'}
+          </span>
+        </button>
 
         {/* Avatar */}
         <div className="relative group cursor-pointer" onClick={() => fileRef.current?.click()}>
@@ -166,7 +205,7 @@ export default function ProfilePanel() {
             />
           ) : (
             <div className="w-20 h-20 rounded-2xl bg-teal-50 border-2 border-[#00B894] flex items-center justify-center text-2xl font-bold text-[#00B894] shadow-xs">
-              {profile?.display_name?.[0]?.toUpperCase() ?? '?'}
+              {(profile?.display_name || user?.display_name || user?.email)?.[0]?.toUpperCase() ?? 'N'}
             </div>
           )}
           <div className="absolute inset-0 rounded-2xl bg-slate-900/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs font-semibold text-white">
@@ -194,7 +233,7 @@ export default function ProfilePanel() {
               <label className="text-[11px] font-semibold text-slate-500 uppercase">{t('profile.username')}</label>
               <input
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                 placeholder="username"
                 className="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:border-[#00B894] focus:bg-white font-sans mt-0.5"
               />
@@ -226,10 +265,10 @@ export default function ProfilePanel() {
         ) : (
           <div className="text-center">
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              {profile?.display_name || 'Anonymous User'}
+              {profile?.display_name || user?.display_name || user?.email?.split('@')[0] || 'NaviSecret Explorer'}
             </h2>
-            <p className="text-xs text-slate-500">
-              @{profile?.username || 'handle_not_set'}
+            <p className="text-xs text-slate-500 font-mono">
+              @{profile?.username || user?.username || user?.email?.split('@')[0] || 'operative'}
             </p>
             <button
               onClick={() => setEditing(true)}

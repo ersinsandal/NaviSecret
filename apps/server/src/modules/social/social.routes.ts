@@ -51,17 +51,21 @@ export async function socialRoutes(app: FastifyInstance): Promise<void> {
 
   // 3. Send Friend Request
   app.post('/social/requests', { preHandler: [authenticate] }, async (request, reply) => {
-    const { targetUserId, friendId, username } = request.body as any;
+    const { targetUserId, friendId, username, userCode } = request.body as any;
     const userId = request.user!.userId;
     let recipientId = targetUserId || friendId;
 
-    if (!recipientId && username) {
-      const user = await queryOne('SELECT id FROM app_users WHERE username = $1', [username]);
+    if (!recipientId && (username || userCode)) {
+      const targetIdentifier = (userCode || username || '').trim();
+      const user = await queryOne(
+        'SELECT id FROM app_users WHERE username = $1 OR user_code = $1 OR user_code = $2',
+        [targetIdentifier, targetIdentifier.startsWith('#') ? targetIdentifier.slice(1) : targetIdentifier]
+      );
       if (user) recipientId = user.id;
     }
 
     if (!recipientId) {
-      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'Target user ID or username required' });
+      return reply.status(400).send({ error: 'BAD_REQUEST', message: 'Target user ID, user code or username required' });
     }
 
     if (recipientId === userId) {
@@ -319,6 +323,19 @@ export async function socialRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // 12. Privacy Rules & Location Sharing
+  app.get('/privacy/rules', { preHandler: [authenticate] }, async (request, reply) => {
+    const userId = request.user!.userId;
+    const rules = await query(
+      `SELECT friend_id as viewer_id, 
+              CASE WHEN can_view_location THEN 'current' ELSE 'none' END as level, 
+              share_expires_at as expires_at 
+       FROM friendships 
+       WHERE user_id = $1`,
+      [userId]
+    );
+    return reply.send({ success: true, rules });
+  });
+
   app.post('/privacy/rules', { preHandler: [authenticate] }, async (request, reply) => {
     const { friendId, targetUserId, canViewLocation = true, shareExpiresAt = null } = request.body as any;
     const userId = request.user!.userId;

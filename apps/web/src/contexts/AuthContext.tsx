@@ -14,7 +14,7 @@ interface AuthContextValue {
   user: NaviUser | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, extra?: { displayName?: string; username?: string }) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -60,8 +60,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const signUp = useCallback(
-    async (email: string, password: string) => {
-      const { data, error } = await sdk.auth.signUp({ email, password })
+    async (email: string, password: string, extra?: { displayName?: string; username?: string }) => {
+      const { data, error } = await sdk.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: extra?.displayName,
+            username: extra?.username,
+          },
+        },
+      })
       if (error) throw error
       if (data.user) setUser(data.user)
     },

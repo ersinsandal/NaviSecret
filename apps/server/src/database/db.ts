@@ -51,6 +51,7 @@ function getSqliteDb(): DatabaseSync {
       status_expires_at TEXT,
       is_casper INTEGER DEFAULT 0,
       casper_until TEXT,
+      user_code TEXT UNIQUE,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -191,6 +192,12 @@ function getSqliteDb(): DatabaseSync {
   try {
     sqliteDb.exec(`ALTER TABLE unveiled_territories ADD COLUMN unveiled_at TEXT DEFAULT (datetime('now'));`);
   } catch {}
+  try {
+    sqliteDb.exec(`ALTER TABLE app_users ADD COLUMN user_code TEXT;`);
+  } catch {}
+  try {
+    sqliteDb.exec(`UPDATE app_users SET user_code = 'NS-' || upper(substr(replace(id, '-', ''), 1, 8)) WHERE user_code IS NULL;`);
+  } catch {}
 
   console.log(`[Database] Resilient embedded SQLite storage initialized at: ${dbPath}`);
   return sqliteDb;
@@ -242,6 +249,8 @@ async function checkPostgres(): Promise<boolean> {
         ALTER TABLE secret_capsules ADD COLUMN IF NOT EXISTS requires_passcode BOOLEAN DEFAULT FALSE;
         ALTER TABLE secret_capsules ADD COLUMN IF NOT EXISTS passcode_hint TEXT;
         ALTER TABLE unveiled_territories ADD COLUMN IF NOT EXISTS unveiled_at TIMESTAMPTZ DEFAULT NOW();
+        ALTER TABLE app_users ADD COLUMN IF NOT EXISTS user_code VARCHAR(16) UNIQUE;
+        UPDATE app_users SET user_code = 'NS-' || UPPER(SUBSTRING(REPLACE(id::text, '-', ''), 1, 8)) WHERE user_code IS NULL;
       `);
       if (postgresHealthy !== true) {
         console.log('[Database] PostgreSQL connected and schemas verified on port 5433');

@@ -37,13 +37,7 @@ export default function SharingPanel() {
 
       let rules: any[] = []
       try {
-        if ((core as any).supabase?.from) {
-          const res = await (core as any).supabase
-            .from('share_rules')
-            .select('viewer_id, level, expires_at')
-            .in('viewer_id', friendIds.length > 0 ? friendIds : ['__none__'])
-          rules = res.data ?? []
-        }
+        rules = await (core as any).getShareRules?.() || []
       } catch {
         rules = []
       }

@@ -81,6 +81,7 @@ export interface Profile {
   status_emoji: string | null;
   status_text: string | null;
   status_expires_at: string | null;
+  user_code?: string;
   created_at: string;
   updated_at: string;
 }

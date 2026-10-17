@@ -328,9 +328,14 @@ export default function SettingsPanel() {
         <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
           {t('settings.account')}
         </h3>
-        <p className="text-xs text-slate-600 truncate">
-          {t('settings.signedInAs')} <span className="font-semibold">{user?.email ?? 'anonymous_user'}</span>
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-slate-600 truncate">
+            {t('settings.signedInAs')} <span className="font-semibold text-slate-800">{user?.email ?? user?.username ?? 'NaviSecret Member'}</span>
+          </p>
+          <span className="text-[10px] font-mono font-bold text-[#00B894] bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200 shrink-0">
+            ID: #{(user as any)?.user_code || (user?.id ? `NS-${user.id.replace(/-/g, '').slice(0, 8).toUpperCase()}` : 'NS-USER')}
+          </span>
+        </div>
         <button
           onClick={handleSignOut}
           className="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 transition-all active:scale-95 cursor-pointer"

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS app_users (
     status_expires_at TIMESTAMPTZ,
     is_casper BOOLEAN DEFAULT FALSE,
     casper_until TIMESTAMPTZ,
+    user_code VARCHAR(16) UNIQUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

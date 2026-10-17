@@ -49,7 +49,7 @@ function buildSegments(history: LocationHistoryRow[], color: string): TrailSegme
 
 async function fetchRealTrails(sdk: LocationCore): Promise<TrailSegment[]> {
   const since = new Date(Date.now() - 24 * 3600000)
-  const { data: { user } } = await sdk.supabase.auth.getUser()
+  const user = await (sdk as any).getCurrentUser?.()
   if (!user) return []
 
   const allSegments: TrailSegment[] = []
