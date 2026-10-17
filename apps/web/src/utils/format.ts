@@ -1,6 +1,18 @@
-export function formatRelativeTime(date: string | Date): string {
+export function formatRelativeTime(date?: string | Date | null | number): string {
+  if (!date) return 'just now'
+  let then: number
+  if (typeof date === 'string') {
+    then = new Date(date).getTime()
+  } else if (typeof date === 'number') {
+    then = date
+  } else if (date instanceof Date) {
+    then = date.getTime()
+  } else {
+    then = new Date(date as any).getTime()
+  }
+
+  if (isNaN(then)) return 'just now'
   const now = Date.now()
-  const then = typeof date === 'string' ? new Date(date).getTime() : date.getTime()
   const diffMs = now - then
 
   if (diffMs < 0) return 'just now'

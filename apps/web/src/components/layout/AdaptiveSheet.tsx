@@ -85,14 +85,17 @@ export default function AdaptiveSheet({
           opacity: open ? 1 : 0,
           pointerEvents: open ? 'auto' : 'none',
         }}
-        onClick={onClose}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
       />
 
       {/* Adaptive Sheet: Desktop Left/Right/Center Docked Glass Card / Mobile Bottom Sheet */}
       <aside
         className={`fixed z-40 flex flex-col cyber-glass-heavy border border-slate-200/90 shadow-[0_20px_50px_-10px_rgba(15,23,42,0.15)] transition-all duration-300 ease-out overflow-hidden
           ${desktopClasses}
-          /* Mobile: Bottom-docked floating card above Quantum Dock */
           max-sm:bottom-20 max-sm:left-3 max-sm:right-3 max-sm:max-h-[78dvh] max-sm:rounded-3xl
           ${
             open

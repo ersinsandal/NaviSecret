@@ -70,6 +70,9 @@ export default function AppShell() {
   }, [geo.lat, geo.lon, geo.accuracy]);
 
   const openPanel = (panel: PanelType) => setActivePanel(panel);
+  const togglePanel = (panel: PanelType) => {
+    setActivePanel((prev) => (prev === panel ? null : panel));
+  };
   const closePanel = () => {
     setActivePanel(null);
     setChatFriendId(undefined);
@@ -166,10 +169,11 @@ export default function AppShell() {
         casperUntil={ghostUntil}
         gpsAccuracy={geo.accuracy}
         rttMs={24}
-        onOpenCasper={() => openPanel('more')}
-        onOpenPulse={() => openPanel('bumps')}
-        onOpenProfile={() => openPanel('profile')}
-        onOpenNotifications={() => openPanel('reactions')}
+        activePanel={activePanel}
+        onOpenCasper={() => togglePanel('more')}
+        onOpenPulse={() => togglePanel('bumps')}
+        onOpenProfile={() => togglePanel('profile')}
+        onOpenNotifications={() => togglePanel('reactions')}
         pulseAlert={pulseAlert}
       />
 
@@ -315,7 +319,7 @@ export default function AppShell() {
           <SlidePanel
             open={activePanel === 'reactions'}
             onClose={closePanel}
-            title={t('settings.settingsTitle')}
+            title={t('settings.notifReactions')}
             category="NOTIFICATIONS"
             side="right"
           >

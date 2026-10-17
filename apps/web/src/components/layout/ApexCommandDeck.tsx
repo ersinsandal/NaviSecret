@@ -9,6 +9,7 @@ interface ApexCommandDeckProps {
   casperUntil: string | null;
   gpsAccuracy: number | null;
   rttMs?: number;
+  activePanel?: string | null;
   onOpenCasper: () => void;
   onOpenPulse: () => void;
   onOpenProfile: () => void;
@@ -22,6 +23,7 @@ export const ApexCommandDeck: React.FC<ApexCommandDeckProps> = ({
   casperUntil,
   gpsAccuracy,
   rttMs,
+  activePanel,
   onOpenCasper,
   onOpenPulse,
   onOpenProfile,
@@ -31,7 +33,7 @@ export const ApexCommandDeck: React.FC<ApexCommandDeckProps> = ({
 }) => {
   const { t } = useI18n();
   return (
-    <header className="fixed top-3 left-0 right-0 z-30 px-3 md:px-6 pointer-events-none flex items-center justify-between gap-3">
+    <header className="fixed top-3 left-0 right-0 z-50 px-3 md:px-6 pointer-events-none flex items-center justify-between gap-3">
       {/* --- Left Wing: Brand Logo --- */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl cyber-glass-heavy border border-slate-200/80 shadow-sm">
@@ -65,9 +67,17 @@ export const ApexCommandDeck: React.FC<ApexCommandDeckProps> = ({
 
         {/* Notification Bell */}
         <button
-          onClick={onOpenNotifications}
-          className="relative flex items-center justify-center w-10 h-10 rounded-2xl cyber-glass-heavy border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm cursor-pointer"
-          title="Notifications & Activity"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenNotifications();
+          }}
+          className={`relative flex items-center justify-center w-10 h-10 rounded-2xl cyber-glass-heavy border transition-all shadow-sm cursor-pointer ${
+            activePanel === 'reactions'
+              ? 'border-[#00B894] bg-teal-50 text-[#00B894] ring-2 ring-[#00B894]/20'
+              : 'border-slate-200/80 text-slate-600 hover:text-slate-900 hover:border-slate-300'
+          }`}
+          title={t('settings.notifReactions')}
         >
           <NaviIcon.Bell size={18} />
           {unreadCount > 0 && (
@@ -79,9 +89,15 @@ export const ApexCommandDeck: React.FC<ApexCommandDeckProps> = ({
 
         {/* User Profile */}
         <button
-          onClick={onOpenProfile}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenProfile();
+          }}
           className={`flex items-center justify-center w-10 h-10 rounded-2xl cyber-glass-heavy border transition-all shadow-sm cursor-pointer ${
-            isCasper
+            activePanel === 'profile'
+              ? 'border-[#00B894] bg-teal-50 text-[#00B894] ring-2 ring-[#00B894]/20'
+              : isCasper
               ? 'border-indigo-300 bg-indigo-50 text-[#6366F1]'
               : 'border-slate-200/80 text-slate-700 hover:text-slate-900 hover:border-slate-300'
           }`}

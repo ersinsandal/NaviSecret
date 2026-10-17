@@ -378,12 +378,14 @@ export default function ProfilePanel() {
             <div className="flex items-baseline justify-between">
               <span className="text-xs text-slate-600">{t('profile.territoriesExplored')}:</span>
               <span className="text-lg font-black text-[#00B894]">
-                {stats.total_cells} {t('profile.cells')}
+                {(stats as any).total_cells ?? (stats as any).total_unveiled ?? 0} {t('profile.cells')}
               </span>
             </div>
-            <p className="text-[10px] text-slate-400">
-              Active since {formatRelativeTime(stats.exploring_since)}
-            </p>
+            {((stats as any).exploring_since || (stats as any).first_unveiled_at) && (
+              <p className="text-[10px] text-slate-400">
+                Active since {formatRelativeTime((stats as any).exploring_since || (stats as any).first_unveiled_at)}
+              </p>
+            )}
           </div>
         ) : (
           <p className="text-xs text-slate-400 text-center py-2">
