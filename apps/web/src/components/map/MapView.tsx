@@ -218,6 +218,7 @@ export default function MapView({
   const [unlockedCapsules, setUnlockedCapsules] = useState<Record<string, string>>({});
   const [passcodeInputs, setPasscodeInputs] = useState<Record<string, string>>({});
   const [passcodeErrors, setPasscodeErrors] = useState<Record<string, string>>({});
+  const [unlockingCapsuleId, setUnlockingCapsuleId] = useState<string | null>(null);
   const lastSentRef = useRef<{ lat: number; lon: number } | null>(null);
 
   // Fetch nearby secret capsules every 15s
@@ -253,6 +254,7 @@ export default function MapView({
       return;
     }
 
+    setUnlockingCapsuleId(capsuleId);
     try {
       setPasscodeErrors((prev) => ({ ...prev, [capsuleId]: '' }));
       const res = await (sdk as any).unlockCapsule(capsuleId, currentLocation.lat, currentLocation.lon);
@@ -266,9 +268,19 @@ export default function MapView({
             [capsuleId]: result.error || t('map.incorrectPasscode'),
           }));
         }
+      } else {
+        setPasscodeErrors((prev) => ({
+          ...prev,
+          [capsuleId]: 'Kapsül verisi okunamadı.',
+        }));
       }
     } catch (e: any) {
-      alert(e.message || t('map.tooFarToDecrypt'));
+      setPasscodeErrors((prev) => ({
+        ...prev,
+        [capsuleId]: e.message || t('map.tooFarToDecrypt'),
+      }));
+    } finally {
+      setUnlockingCapsuleId(null);
     }
   };
 
@@ -586,23 +598,30 @@ export default function MapView({
                             }}
                             className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-[#D97706] focus:ring-2 focus:ring-amber-500/20 outline-none text-xs font-mono font-bold"
                           />
-                          {passcodeErrors[c.id] && (
-                            <div className="text-[10px] text-rose-600 font-semibold mt-1">
-                              {passcodeErrors[c.id]}
-                            </div>
-                          )}
+                        </div>
+                      )}
+
+                      {passcodeErrors[c.id] && (
+                        <div className="text-[10px] text-rose-600 font-semibold p-2 rounded-xl bg-rose-50 border border-rose-200 leading-tight">
+                          {passcodeErrors[c.id]}
                         </div>
                       )}
 
                       <button
                         onClick={() => handleUnlockCapsule(c.id, isVault)}
-                        className={`w-full py-2.5 px-3 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer ${
+                        disabled={unlockingCapsuleId === c.id}
+                        className={`w-full py-2.5 px-3 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-60 ${
                           isVault
                             ? 'bg-[#D97706] hover:bg-[#B45309] text-white'
                             : 'bg-[#00B894] hover:bg-[#009874] text-white'
                         }`}
                       >
-                        {isVault ? (
+                        {unlockingCapsuleId === c.id ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <span>{t('common.loading')}</span>
+                          </span>
+                        ) : isVault ? (
                           <>
                             <NaviIcon.Capsule size={14} color="#FFFFFF" />
                             <span>{t('map.unlockWithPasscodeBtn')}</span>
