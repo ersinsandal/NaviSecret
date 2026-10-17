@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-test:
+    name: Unit & Verification Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build SDK
+        run: pnpm --filter @navisecret/sdk build
+      - name: Build geo-drop
+        run: pnpm --filter @navisecret/geo-drop build
+      - name: Run unit tests
+        run: pnpm test:unit
+      - name: Run Acceptance & Verification Suite
+        run: pnpm test:verify
+
+  build-and-smoke:
+    name: Build & Backend Smoke Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build SDK & GeoDrop
+        run: |
+          pnpm --filter @navisecret/sdk build
+          pnpm --filter @navisecret/geo-drop build
+      - name: Build Fastify Backend Server
+        run: pnpm --filter @navisecret/server build
+      - name: Run Backend Smoke Tests (Fastify Injection)
+        run: pnpm server:smoke
+      - name: Type check web app
+        run: npx tsc --noEmit -p apps/web/tsconfig.json
+      - name: Build Web App (Vite)
+        run: pnpm --filter web build

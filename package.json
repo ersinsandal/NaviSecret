@@ -1,0 +1,46 @@
+{
+  "name": "navisecret",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NaviSecret — Privacy-first location sharing & geo-anchored encrypted content platform",
+  "license": "MIT",
+  "author": "Ersin Sandal (SliferSoft)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "pnpm --filter @navisecret/sdk build && pnpm --filter @navisecret/geo-drop build && pnpm --filter @navisecret/server build && pnpm --filter web build",
+    "build:geo-drop": "pnpm --filter @navisecret/geo-drop build",
+    "dev:web": "pnpm --filter web dev",
+    "build:web": "pnpm --filter web build",
+    "test": "pnpm test:verify && pnpm test:unit && pnpm server:smoke",
+    "test:verify": "npx tsx scripts/verify-suite.ts",
+    "test:unit": "pnpm --filter @navisecret/sdk test && pnpm --filter @navisecret/geo-drop test",
+    "dev:server": "pnpm --filter @navisecret/server dev",
+    "build:server": "pnpm --filter @navisecret/server build",
+    "server:smoke": "pnpm --filter @navisecret/server test",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose ps",
+    "keys:generate": "node scripts/generate-keys.mjs"
+  },
+  "devDependencies": {
+    "ethers": "^6.16.0",
+    "hardhat": "^3.2.0",
+    "sharp": "^0.34.5",
+    "solc": "^0.8.34",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
+}
+

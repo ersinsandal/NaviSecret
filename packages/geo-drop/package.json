@@ -1,0 +1,76 @@
+{
+  "name": "@navisecret/geo-drop",
+  "version": "1.0.0",
+  "description": "Location-bound encrypted data drops with IPFS and geofence verification for NaviSecret",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "zkp:compile": "powershell -ExecutionPolicy Bypass -File ./circuits/build-navi-zkp.ps1 -CompileOnly",
+    "zkp:build": "powershell -ExecutionPolicy Bypass -File ./circuits/build-navi-zkp.ps1",
+    "zkp:witness": "node ./circuits/run-witness.cjs ./circuits/build/navisecret_zkp_js/navisecret_zkp.wasm ./circuits/example-proximity-input.json ./circuits/build/navisecret_zkp.wtns",
+    "zkp:prove": "snarkjs groth16 prove ./circuits/navisecret_zkp_final.zkey ./circuits/build/navisecret_zkp.wtns ./circuits/build/navisecret_zkp_proof.json ./circuits/build/navisecret_zkp_public.json",
+    "zkp:verify": "snarkjs groth16 verify ./circuits/verification_key.json ./circuits/build/navisecret_zkp_public.json ./circuits/build/navisecret_zkp_proof.json",
+    "zkp:bench": "node ./test/benchmark-zkp.mjs",
+    "zkp:paper-eval": "node ./test/evaluate-regular-paper.mjs",
+    "zkp:boundary": "node ./test/evaluate-boundary-cases.mjs",
+    "zkp:boundary:sweep": "node ./test/evaluate-boundary-sweep.mjs",
+    "zkp:latency": "node ./test/evaluate-unlock-latency.mjs",
+    "zkp:endtoend": "node ./test/evaluate-end-to-end.mjs",
+    "zkp:repro": "node ./test/reproducibility-check.mjs",
+    "zkp:prototype:bench": "node ./test/prototype-bench.mjs",
+    "zkp:prototype:latency": "node ./test/prototype-latency.mjs",
+    "zkp:off-circuit": "node ./test/evaluate-off-circuit-baseline.mjs",
+    "zkp:defense": "node ./test/evaluate-defense-in-depth.mjs",
+    "zkp:browser:serve": "npx serve . -p 3456 -C",
+    "zkp:test": "tsx test/verify-features.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.0"
+  },
+  "devDependencies": {
+    "circom2": "^0.2.22",
+    "circomlib": "^2.0.5",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "@navisecret/sdk": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "snarkjs": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "snarkjs": "0.7.6"
+  },
+  "author": "Ersin Sandal (SliferSoft)",
+  "keywords": [
+    "location",
+    "geofence",
+    "ipfs",
+    "web3",
+    "privacy",
+    "zkp",
+    "navisecret"
+  ],
+  "license": "MIT"
+}

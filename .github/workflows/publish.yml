@@ -1,0 +1,57 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+
+      - name: Set version from release tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Publishing version: $VERSION"
+          node -e "
+            const fs = require('fs');
+            for (const dir of ['packages/sdk', 'packages/geo-drop']) {
+              const path = dir + '/package.json';
+              const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+              pkg.version = '$VERSION';
+              fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
+              console.log(dir + ': ' + pkg.version);
+            }
+          "
+
+      - name: Configure npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build SDK
+        run: pnpm --filter @navisecret/sdk build
+      - name: Build geo-drop
+        run: pnpm --filter @navisecret/geo-drop build
+
+      - name: Publish @navisecret/sdk
+        run: pnpm --filter @navisecret/sdk publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @navisecret/geo-drop
+        run: pnpm --filter @navisecret/geo-drop publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

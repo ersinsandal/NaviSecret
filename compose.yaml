@@ -1,0 +1,124 @@
+# ==============================================================================
+# NaviSecret - High-Performance Self-Hosted Container Stack
+# Author & Owner: Ersin Sandal (SliferSoft)
+# Architecture: Node.js (Fastify) + Redis + PostgreSQL 16 + Nginx Web SPA
+# Resource Footprint: ~250 MB RAM (Zero Supabase, Kong, or GoTrue overhead)
+# ==============================================================================
+
+name: navisecret
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Web Application Frontend (Nginx SPA + Reverse Proxy)
+  # ----------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${API_EXTERNAL_URL:-http://localhost:8000}
+    image: navisecret-web:latest
+    container_name: navisecret_web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - navisecret_network
+
+  # ----------------------------------------------------------------------------
+  # 2. Classic Backend Server (Fastify + Realtime WebSockets)
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    image: navisecret-api:latest
+    container_name: navisecret_api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      PORT: 8000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-postgres}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      STORAGE_PATH: /app/uploads
+      CORS_ORIGIN: "true"
+    volumes:
+      - navisecret_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - navisecret_network
+
+  # ----------------------------------------------------------------------------
+  # 3. In-Memory Geospatial Cache & Message Broker (Redis 7)
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: navisecret_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - navisecret_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - navisecret_network
+
+  # ----------------------------------------------------------------------------
+  # 4. Relational Database Engine (PostgreSQL 16)
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: navisecret_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    volumes:
+      - navisecret_postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - navisecret_network
+
+# ==============================================================================
+# Persistent Named Volumes & Bridge Network
+# ==============================================================================
+volumes:
+  navisecret_postgres_data:
+    name: navisecret_postgres_data
+  navisecret_redis_data:
+    name: navisecret_redis_data
+  navisecret_uploads:
+    name: navisecret_uploads
+
+networks:
+  navisecret_network:
+    name: navisecret_network
+    driver: bridge

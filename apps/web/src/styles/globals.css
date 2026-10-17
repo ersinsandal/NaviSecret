@@ -1,0 +1,300 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* ==============================================================================
+   NaviSecret Clean Light & Deep Navy Signature Design Tokens
+   Author & Owner: Ersin Sandal (SliferSoft)
+   ============================================================================== */
+
+:root {
+  /* 1. Clean White & Crisp Light Palette */
+  --ns-bg-void: #F8FAFC;
+  --ns-bg-obsidian: #FFFFFF;
+  --ns-bg-surface: #FFFFFF;
+  --ns-bg-surface-elevated: #F1F5F9;
+  --ns-bg-glass: rgba(255, 255, 255, 0.88);
+  --ns-bg-glass-heavy: rgba(255, 255, 255, 0.94);
+
+  /* 2. Deep Navy & Signature Accents */
+  --ns-accent-navy: #0F172A;
+  --ns-accent-navy-surface: #1E293B;
+  --ns-accent-mint: #00B894;
+  --ns-accent-mint-glow: rgba(0, 184, 148, 0.35);
+  --ns-accent-violet: #6366F1;
+  --ns-accent-violet-glow: rgba(99, 102, 241, 0.35);
+  --ns-accent-amber: #D97706;
+  --ns-accent-amber-glow: rgba(217, 119, 6, 0.35);
+  --ns-accent-cyan: #0284C7;
+  --ns-accent-cyan-glow: rgba(2, 132, 199, 0.35);
+  --ns-accent-rose: #E11D48;
+  --ns-accent-rose-glow: rgba(225, 29, 72, 0.35);
+
+  /* 3. Typography Hierarchy (Deep Navy Slate) */
+  --ns-text-primary: #0F172A;
+  --ns-text-secondary: #475569;
+  --ns-text-tertiary: #64748B;
+  --ns-text-disabled: #94A3B8;
+
+  /* 4. Glass & Borders */
+  --ns-border-subtle: rgba(15, 23, 42, 0.08);
+  --ns-border-highlight: rgba(0, 184, 148, 0.4);
+  --ns-border-violet: rgba(99, 102, 241, 0.4);
+  --ns-glass-blur: blur(20px);
+  --ns-glass-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.08), 0 5px 15px -3px rgba(15, 23, 42, 0.04);
+
+  /* 5. Legacy Mapping for Existing Panels Compatibility */
+  --md-primary: #00B894;
+  --md-on-primary: #FFFFFF;
+  --md-primary-container: #E6F7F2;
+  --md-on-primary-container: #004D3F;
+
+  --md-secondary: #6366F1;
+  --md-on-secondary: #FFFFFF;
+  --md-secondary-container: #EEF2FF;
+  --md-on-secondary-container: #3730A3;
+
+  --md-tertiary: #D97706;
+  --md-on-tertiary: #FFFFFF;
+  --md-tertiary-container: #FEF3C7;
+  --md-on-tertiary-container: #78350F;
+
+  --md-error: #E11D48;
+  --md-on-error: #FFFFFF;
+  --md-error-container: #FFE4E6;
+  --md-on-error-container: #881337;
+
+  --md-surface: #FFFFFF;
+  --md-on-surface: #0F172A;
+  --md-surface-variant: #F8FAFC;
+  --md-on-surface-variant: #475569;
+  --md-surface-container: #FFFFFF;
+  --md-surface-container-low: #F8FAFC;
+  --md-surface-container-high: #F1F5F9;
+
+  --md-outline: rgba(15, 23, 42, 0.12);
+  --md-outline-variant: rgba(0, 184, 148, 0.25);
+  --md-inverse-surface: #0F172A;
+  --md-inverse-on-surface: #F8FAFC;
+  --md-inverse-primary: #00B894;
+  --md-shadow: rgba(15, 23, 42, 0.08);
+  --md-scrim: rgba(15, 23, 42, 0.4);
+}
+
+/* ==============================================================================
+   Modern Clean Utility Classes
+   ============================================================================== */
+
+/* Frosted glass container */
+.cyber-glass {
+  background: var(--ns-bg-glass);
+  backdrop-filter: var(--ns-glass-blur);
+  -webkit-backdrop-filter: var(--ns-glass-blur);
+  border: 1px solid var(--ns-border-subtle);
+  box-shadow: var(--ns-glass-shadow);
+  color: var(--ns-text-primary);
+}
+
+/* Heavy frosted glass for modals and floating docks */
+.cyber-glass-heavy {
+  background: var(--ns-bg-glass-heavy);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 8px 20px -6px rgba(15, 23, 42, 0.06);
+  color: var(--ns-text-primary);
+}
+
+/* Interactive card */
+.cyber-card {
+  background: var(--ns-bg-surface);
+  border: 1px solid var(--ns-border-subtle);
+  border-radius: 14px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--ns-text-primary);
+}
+.cyber-card:hover {
+  background: var(--ns-bg-surface-elevated);
+  border-color: rgba(0, 184, 148, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+}
+
+/* Glow effects */
+.glow-mint {
+  box-shadow: 0 0 15px var(--ns-accent-mint-glow);
+}
+.glow-violet {
+  box-shadow: 0 0 15px var(--ns-accent-violet-glow);
+}
+.glow-amber {
+  box-shadow: 0 0 15px var(--ns-accent-amber-glow);
+}
+
+/* Radar pulse animation */
+@keyframes sonar-wave {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.animate-sonar {
+  animation: sonar-wave 2.2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* Floating beacon animation */
+@keyframes beacon-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.animate-float {
+  animation: beacon-float 3s ease-in-out infinite;
+}
+
+/* Quantum pulse rotation */
+@keyframes nexus-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-nexus {
+  animation: nexus-spin 12s linear infinite;
+}
+
+/* Sleek modern scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ns-accent-mint);
+}
+
+/* Base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  width: 100vw;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter',
+    'Helvetica Neue', Arial, sans-serif;
+  background: var(--ns-bg-void);
+  color: var(--ns-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  user-select: none;
+}
+
+#root {
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  background: #F8FAFC;
+}
+
+/* Leaflet Container isolation - Clean natural light canvas */
+.leaflet-container {
+  isolation: isolate;
+  background: #E8EEF5 !important;
+}
+
+/* Natural tile display - no inverted negative filters */
+.leaflet-tile {
+  filter: none !important;
+}
+
+/* Clean Modern Leaflet Popups */
+.cyber-leaflet-popup .leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 15px 40px -10px rgba(15, 23, 42, 0.15) !important;
+  color: #0F172A !important;
+  padding: 0 !important;
+}
+
+.cyber-leaflet-popup .leaflet-popup-content {
+  margin: 12px 16px !important;
+  line-height: 1.4 !important;
+  color: #0F172A !important;
+}
+
+.cyber-leaflet-popup .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.cyber-leaflet-popup .leaflet-popup-close-button {
+  color: #64748B !important;
+  padding: 8px !important;
+  top: 6px !important;
+  right: 6px !important;
+}
+
+.cyber-leaflet-popup .leaflet-popup-close-button:hover {
+  color: #0F172A !important;
+}
+
+/* Modern Glass Leaflet Attribution with SliferSoft Signature */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-top-left-radius: 10px !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-family: inherit !important;
+  color: #64748B !important;
+  box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+.leaflet-control-attribution a {
+  color: #0F172A !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+.leaflet-control-attribution a:hover {
+  color: #00B894 !important;
+  text-decoration: underline !important;
+}
+
+.leaflet-control-attribution .slifersoft-brand {
+  font-weight: 800 !important;
+  color: #0F172A !important;
+  background: linear-gradient(135deg, #0F172A, #00B894);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  padding-left: 2px;
+}
+

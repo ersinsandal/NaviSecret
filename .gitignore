@@ -1,0 +1,112 @@
+# Environment
+.env
+.env.local
+*.env
+
+# Local Databases & Uploads
+*.sqlite
+*.sqlite-journal
+*.db
+apps/server/uploads/*
+!apps/server/uploads/.gitkeep
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+packages/geo-drop/circuits/*.ptau
+packages/geo-drop/circuits/*_0000.zkey
+packages/geo-drop/circuits/*_final.zkey
+
+# IDE & editor
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+nul
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# TLS / secrets
+*.crt
+*.key
+
+# Generated evaluation results (reproducible from scripts)
+packages/geo-drop/test/*-2026-*.json
+packages/geo-drop/test/results-*.json
+
+# Project-specific
+CLAUDE.md
+AGENTS.md
+
+# Internal working & strategy docs — MUST NOT ship to any public branch.
+# (paper/review strategy, unpublished design, unpatched-vuln roadmap, AI worklists)
+docs/IMPROVEMENT-ROADMAP.md
+docs/BRUSHUP-PLAN.md
+docs/FABLE-TASKS.md
+docs/imwut-construct-ladder.md
+docs/imwut-review-panel-strategy.md
+
+# OSM cache (large, regenerable via Overpass API)
+packages/geo-drop/test/osm-tokyo-pois.json
+packages/geo-drop/osm-eval-stderr.txt
+packages/geo-drop/contracts/deploy/.env
+packages/geo-drop/contracts/deploy/deployments/
+
+# GeoLife dataset (large, downloaded separately)
+eval/geolife/geolife.zip
+eval/geolife/Geolife Trajectories 1.3/
+eval/geolife/processed/
+
+# Dense-trace personal device logs (raw GPS, auto-detected home/work coords);
+# pipeline scripts are public, but device-side traces and per-fix outputs
+# contain private location data.
+eval/dense-trace/raw-*.json
+eval/dense-trace/clean-seg*.json
+eval/dense-trace/hybrid-trace.json
+
+# Real Android device dumps (dumpsys location/batterystats) from the
+# sensing-gate energy measurement rig — location.txt files here contain
+# actual precise researcher-device coordinates (unlike adb/fixtures/,
+# which are synthetic DRY-RUN fixtures and are fine to publish).
+eval/dense-trace/device/results/
+
+# Per-eval results/ contain auto-detected home/work coordinates (in
+# dense-trace and cross-dataset cases, real users' homes). The
+# sanitised copies under results-public/ replace coordinates with
+# REDACTED markers and are public.
+eval/dense-trace/results/
+eval/cenceme/results/
+eval/studentlife/results/
+eval/tdrive/results/
+eval/geolife/results/
+
+# T-Drive raw zips, extracted data, and upstream user guide
+# (download from Microsoft Research)
+eval/tdrive/*.zip
+eval/tdrive/data/
+eval/tdrive/processed/
+eval/tdrive/User_guide_T-drive.pdf
+
+# CenceMe raw traces and upstream documentation (CRAWDAD;
+# license restricts redistribution of personal data)
+eval/cenceme/processed/
+eval/cenceme/DataExplanationCenceMe.pdf
+
+# StudentLife raw GPS (Dartmouth dataset; download separately)
+eval/studentlife/processed/
+
+# Public-review fetch dumps (paraphrased text bodies of real reviews
+# are not redistributed; re-fetchable via the public APIs).
+eval/public-reviews/apple-rss-reviews.json
+eval/public-reviews/play-reviews.json
+eval/public-reviews/reviews.OBSOLETE-synth.json.bak

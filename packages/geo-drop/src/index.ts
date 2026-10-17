@@ -1,0 +1,229 @@
+/**
+ * @navisecret/geo-drop
+ * Location-bound decentralized data drops with IPFS and geofence verification
+ */
+
+// Core
+export { createGeoDrop } from './core';
+
+// Errors
+export { GeoDropError } from './errors';
+export type { GeoDropErrorCode } from './errors';
+
+// Verification engine (for advanced use / custom integrations)
+export { createVerificationEngine } from './verification';
+export type { VerificationEngine, VerificationEngineOptions } from './verification';
+
+// Types
+export type {
+  // SDK
+  GeoDropOptions,
+  GeoDropSDK,
+  // Drop
+  GeoDrop,
+  GeoDropCreate,
+  DropVisibility,
+  DropContentType,
+  DropStatus,
+  // Claim
+  DropClaim,
+  NearbyDrop,
+  // IPFS
+  IpfsConfig,
+  IpfsUploadResult,
+  // Location proof
+  ProofMethodType,
+  ProofRequirement,
+  ProofConfig,
+  ProofSubmission,
+  ProofResult,
+  ProofVerifier,
+  VerificationResult,
+  // Location proof
+  LocationProof,
+  // Crypto
+  EncryptedPayload,
+  // Stats
+  DropStats,
+  // NFT
+  NftMetadata,
+  // Share
+  DropShare,
+  // Persistence
+  PersistenceLevel,
+  PersistenceConfig,
+  PersistenceResult,
+  ChainConfig,
+  EvmSigner,
+  DropMetadataDocument,
+  RecoveredDrop,
+  // Step-up verification
+  StepUpRequired,
+  UnlockSuccess,
+  UnlockResult,
+} from './types';
+
+// Persistence (DB-independent recovery)
+export { createPersistenceManager } from './persistence';
+export type { PersistenceManager, PersistenceManagerConfig } from './persistence';
+
+// Chain client (EVM on-chain registry)
+export { createChainClient } from './chain';
+export type { ChainClient } from './chain';
+
+// ZKP (Zero-Knowledge Proof of Location)
+export {
+  buildZkStatementBinding,
+  generateZeroProof,
+  generateNaviZkpProof,
+  generateProximityProof,
+  verifyProximityProof,
+  validatePublicSignals,
+  toFixedPoint,
+  metersToRadiusSquared,
+  cosLatScaled,
+  // Region (polygon containment)
+  generateRegionProof,
+  generateNaviRegionProof,
+  generateZeroRegionProof,
+  verifyRegionProof,
+  validateRegionPublicSignals,
+  MAX_POLYGON_VERTICES,
+} from './zkp';
+export type {
+  Groth16Proof,
+  ZkProximityProof,
+  ZkContextBinding,
+  ZkStatementBinding,
+  CircuitArtifacts,
+  VerificationKey,
+  ZkpConfig,
+  PolygonVertex,
+  ZkRegionProof,
+} from './zkp';
+
+// Trust scoring
+export {
+  computeTrustScore,
+  computeTrustScoreV2,
+  gateTrustScore,
+  createTrustSession,
+  temporalRaimTrustSignalProvider,
+  networkCrossCheckTrustSignalProvider,
+  DEFAULT_TRUST_SIGNAL_PROVIDERS,
+} from './trust-scorer';
+export type {
+  TrustSession,
+  TrustSignalEvidence,
+  TrustSignalInput,
+  TrustSignalObservation,
+  TrustSignalProvider,
+} from './trust-scorer';
+export type {
+  LocationPoint,
+  TrustScoreResult,
+  TrustScoreResultV2,
+  TrustThresholds,
+  TrustDeviceCapabilities,
+  GpsFix,
+  NetworkHint,
+  ImuSummary,
+  TrustContext,
+} from './types';
+
+// Geofence utilities
+export { encodeGeohash, decodeGeohash, calculateDistance, verifyProximity, geohashNeighbors, isMovementRealistic } from './geofence';
+export type { VerifyOptions } from './geofence';
+
+// Crypto utilities
+export { encrypt, decrypt, hashPassword, deriveLocationKey, CURRENT_KEY_VERSION } from './crypto';
+export type { KeyDerivationVersion } from './crypto';
+
+// Zero-Knowledge Location States (ZKLS)
+export {
+  createHomeCommitment,
+  createPoseidonHomeCommitment,
+  computeGridParams,
+  generateGridMembershipProof,
+  generateDepartureProof,
+  verifyGridMembershipProof,
+  verifyDepartureProof,
+  quantizeLatBand,
+} from './zkls';
+export type {
+  ZkGridMembershipProof,
+  ZkDepartureProof,
+  HomeCommitment,
+  HomeCommitmentScheme,
+  PoseidonHasher,
+  ZklsConfig,
+  ZklsProtocol,
+  GridParams,
+} from './zkls';
+
+// Encrypted geographic search (GridSE)
+export {
+  generateIndexTokens,
+  generateSearchTokens,
+  matchTokens,
+  selectPrecisionForRadius,
+} from './encrypted-search';
+export type {
+  EncryptedSearchConfig,
+  LocationIndexTokens,
+  SearchTokenSet,
+  EncryptedSearchMatch,
+} from './encrypted-search';
+
+// SBPP (Search-Bound Proximity Proofs)
+export {
+  createSession as createSbppSession,
+  isSessionValid as isSbppSessionValid,
+  SbppSessionStore,
+  buildSbppChallengeDigest,
+  verifySbppBinding,
+  sbppSearch,
+  sbppMatch,
+  sbppVerifyBinding,
+  TokenInvertedIndex,
+  SBPP_DOMAIN_SEPARATOR,
+  computeResultSetDigest,
+  MerkleResultSet,
+  SbppAuditLog,
+} from './sbpp';
+export type {
+  SbppSession,
+  SbppSessionOptions,
+  SbppSearchResult,
+  SbppProofContext,
+  MerkleProof,
+  SbppAuditRecord,
+} from './sbpp';
+
+// IPFS client
+export { IpfsClient } from './ipfs';
+
+// IPFS pin health monitoring
+export { checkPinHealth, auditDropPins, repinMissing } from './pin-monitor';
+export type {
+  GatewayStatus,
+  PinHealthResult,
+  DropPinEntry,
+  PinAuditReport,
+  RepinResult,
+  PinHealthOptions,
+  AuditOptions,
+  RepinOptions,
+} from './pin-monitor';
+
+// NaviDrop Brand Exports (NaviSecret Ecosystem)
+export { createGeoDrop as createNaviDrop } from './core';
+export { GeoDropError as NaviDropError } from './errors';
+export type { GeoDropErrorCode as NaviDropErrorCode } from './errors';
+export type {
+  NaviDrop,
+  NaviDropCreate,
+  NaviDropOptions,
+  NaviDropSDK,
+} from './types';
+

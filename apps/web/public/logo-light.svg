@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="navPinGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00B894"/>
+      <stop offset="50%" stop-color="#0984E3"/>
+      <stop offset="100%" stop-color="#2D3436"/>
+    </linearGradient>
+    <linearGradient id="textGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00A884"/>
+      <stop offset="100%" stop-color="#0984E3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon group on left (scale and center at x=56, y=60) -->
+  <g transform="translate(14, 12) scale(0.188)">
+    <!-- Radar rings -->
+    <circle cx="256" cy="225" r="150" fill="none" stroke="#E2E8F0" stroke-width="3" opacity="0.8"/>
+    <!-- Main Pin -->
+    <path d="M 256,425
+             C 244,408 148,284 148,206
+             C 148,146.3 196.3,98 256,98
+             C 315.7,98 364,146.3 364,206
+             C 364,284 268,408 256,425 Z"
+          fill="url(#navPinGradLight)"/>
+    <!-- Center White Core -->
+    <circle cx="256" cy="206" r="66" fill="#FFFFFF"/>
+    <!-- N Glyph inside pin -->
+    <path d="M 226,242 L 226,170" stroke="url(#navPinGradLight)" stroke-width="11" stroke-linecap="round"/>
+    <path d="M 286,242 L 286,170" stroke="url(#navPinGradLight)" stroke-width="11" stroke-linecap="round"/>
+    <path d="M 226,174 L 286,238" stroke="url(#navPinGradLight)" stroke-width="11" stroke-linecap="round"/>
+    <!-- Keyhole core -->
+    <circle cx="256" cy="196" r="14" fill="#FFFFFF"/>
+    <path d="M 250,198 L 247,222 L 265,222 L 262,198 Z" fill="#FFFFFF"/>
+    <circle cx="256" cy="196" r="6" fill="#00B894"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="126" y="65" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="42" font-weight="700" letter-spacing="-0.5">
+    <tspan fill="#0B1220">Navi</tspan><tspan fill="url(#textGradLight)">Secret</tspan>
+  </text>
+  
+  <text x="128" y="88" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="600" letter-spacing="3.5" fill="#64748B">
+    EVERY PLACE HOLDS A SECRET
+  </text>
+</svg>
