@@ -2,12 +2,13 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.svg" />
-    <img src="assets/logo-dark.svg" alt="NaviSecret Logo" width="340" />
+    <img src="assets/logo-dark.svg" alt="NaviSecret Logo" width="360" />
   </picture>
 </p>
 
 <p align="center">
-  <strong>Privacy-First Real-Time Location Sharing & Geo-Anchored Secret Capsule Platform</strong>
+  <strong>Every place holds a secret.</strong><br />
+  <em>Privacy-first spatial social network, encrypted location capsules, real-time proximity discovery, and zero-knowledge location proofs.</em>
 </p>
 
 <p align="center">
@@ -24,114 +25,161 @@
   <img src="https://img.shields.io/badge/TypeScript-5.6-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16">
   <img src="https://img.shields.io/badge/Redis-7-DC382D.svg?style=flat-square&logo=redis&logoColor=white" alt="Redis 7">
+  <img src="https://img.shields.io/badge/ZKP-Groth16-F58025.svg?style=flat-square" alt="Groth16 ZKP">
+  <img src="https://img.shields.io/badge/Encryption-AES--256--GCM-9cf.svg?style=flat-square" alt="AES-256-GCM">
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat-square&logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/i18n-EN%20%7C%20TR%20%7C%20RU-brightgreen.svg?style=flat-square" alt="Multi-Language">
 </p>
 
 ---
 
-## Overview
+## The Vision: "Every Place Holds a Secret"
 
-**NaviSecret** is an open-source, sovereign, privacy-first spatial social platform. It combines real-time location sharing with friends, proximity-based physical encounters, and location-anchored encrypted digital capsules that can only be unlocked when arriving at real-world coordinates.
+In a hyper-connected world, personal privacy has been traded away for convenience. Commercial location apps continuously stream raw GPS coordinates to ad brokers and centralized surveillance databases, treating human movement as a monetization metric.
 
-Unlike conventional tracking applications that continuously monetize and centralize user coordinate histories, NaviSecret puts privacy and self-hosting first:
-- **Zero Third-Party Cloud Dependencies**: The platform is 100% self-hosted and independent. It requires no external Backend-as-a-Service (BaaS) platforms or proprietary map API keys.
-- **Granular Privacy & Ghost Mode**: Users maintain granular control over their location visibility, choosing between Precise coordinates, Obfuscated/Fuzzy presence, or immediate Ghost Mode with countdown timers.
-- **Location-Bound Capsules**: Users can leave encrypted messages, photos, and digital secrets pinned to specific physical locations. These capsules only unlock when authorized peers physically enter the geofenced perimeter.
-- **Ultra-Lightweight Resource Footprint**: The entire production stack runs in four containerized microservices via Docker Compose, consuming only approximately 100 MB of total RAM.
+**NaviSecret restores the enchantment and sovereignty of physical space.**
+
+Imagine walking past an ordinary street bench, an ancient city fountain, or a secluded cliffside, knowing that right at those exact coordinates sits an invisible, encrypted digital capsule — a heartfelt letter, a memory left by a traveler, an audio recording from years ago, or a secret treasure hunt clue. You cannot open it from a couch thousands of miles away. The server itself cannot open it. **You must physically stand there to unlock its secret.**
+
+NaviSecret transforms the physical globe into an encrypted living canvas of human connections, spontaneous encounters, and digital artifacts:
+- **Anchor Memories & Secrets to Real-World Coordinates**: Leave encrypted letters, photos, or voice notes that only unlock when designated recipients or curious explorers stand within a 20-meter geofenced perimeter.
+- **Serendipitous Proximity Encounters (NaviBump)**: Discover when friends cross your path in the physical world and initiate a secure peer handshake.
+- **Zero-Knowledge Mathematical Privacy (NaviZKP)**: Prove you were at a landmark, event, or checkpoint without ever revealing your actual coordinate trajectory $(\text{lat}, \text{lon})$ to the server or public ledger.
+- **Sovereign, Self-Hosted Freedom**: Zero reliance on proprietary cloud BaaS. Runs independently on your own hardware in a lean, ~100 MB RAM containerized stack.
 
 ---
 
-## Core Capabilities
+## What Can Users Do in NaviSecret?
 
-### 1. Real-Time Social Map & Radar
-- Live coordinate synchronization across peers with sub-second latency powered by native WebSockets and Redis Pub/Sub.
-- High-performance Leaflet cartography with seamless toggling between detailed OpenStreetMap street views and satellite imagery without tracking scripts.
-- Visual proximity radar indicating distance and heading towards friends and nearby capsules.
+### 1. Leave Geo-Anchored Secret Capsules (NaviDrop)
+- **Time & Memory Capsules**: Lock a message at the spot where you first met your partner, set to unlock only on your anniversary when returning to that exact bench.
+- **Urban Scavenger Hunts**: Craft multi-stage city adventures where each clue unlocks the coordinates to the next physical landmark.
+- **Digital Dead-Drops**: Share sensitive files or private notes with peers that exist purely in physical space, immune to remote interception.
+- **Cryptographic Spatial Gating**: Payloads are encrypted client-side with `AES-256-GCM`. The decryption key is derived on-site using PBKDF2 over geofence proximity verification. The host server holds only ciphertext and never sees plain content.
 
-### 2. Geo-Anchored Secret Capsules (NaviDrop)
-- Anchor digital content (messages, media, clues) to specific coordinates with a configurable unlock radius (e.g., 25m, 50m, 100m).
-- Content remains encrypted on the server; clients can only request and unlock the payload when physical proximity is verified.
-- Time-delayed capsules allowing creators to schedule expiration dates or delayed reveals.
+<p align="center">
+  <img src="assets/geodrop-flow.svg" alt="GeoDrop Architecture Flow" width="720" />
+</p>
 
-### 3. NaviBump (Proximity Pairing)
-- Physical proximity detection alerting users when mutual friends cross paths in the real world.
-- One-tap instant peer handshake to exchange contacts and start real-time communication.
+### 2. Discover Peers Nearby with NaviBump & Radar
+- **Spatial Radar**: Visual compass and proximity radar displaying real-time distance and direction to nearby friends and discovered capsules.
+- **NaviBump Physical Pairing**: When two users carrying NaviSecret are physically near each other, the app detects proximity and allows an instant one-tap contact exchange and secure chat session.
+- **Nearby Messaging**: Safely communicate with peers in your immediate vicinity without giving away your exact domestic address.
 
-### 4. Privacy Shield & Ghost Mode
-- **Precise Mode**: Shares exact GPS coordinates with designated friends or groups.
-- **Fuzzy / Blurred Mode**: Perturbs coordinates with random noise to communicate general vicinity without disclosing exact addresses.
-- **Ghost Mode**: One-tap complete cloaking that instantly conceals the user from the map, featuring auto-revert countdown timers (e.g., 1 hour, 8 hours, indefinite).
+### 3. Mathematical Anonymity with Zero-Knowledge Proofs (NaviZKP)
+- Built on Groth16 zk-SNARK circuits written in Circom.
+- Allows a user to generate a succinct cryptographic proof attesting:
+  $$\text{"I am currently within radius } R \text{ of landmark } (x_0, y_0)\text{"}$$
+- The verification verifies the proximity claim with 100% mathematical certainty while leaking **zero information** about the user's actual coordinates $(x_1, y_1)$.
 
-### 5. In-App Chat & Live Reactions
-- End-to-end direct messaging between friends and custom group chats.
-- Real-time emoji reactions and interactive map pokes sent directly to friend avatars.
+<p align="center">
+  <img src="assets/zkp-flow.svg" alt="Zero Knowledge Proof Proximity Verification" width="720" />
+</p>
 
-### 6. Exploration & Footprints (Visited Territory)
-- Records personal exploration history and travel trails without persistent server-side trail exposure.
-- Gamified area coverage displaying discovered neighborhoods and places.
+### 4. Dynamic Privacy Shield & Ghost Mode
+- **Precise Mode**: Shares exact GPS coordinates with trusted close friends or family.
+- **Fuzzy / Obfuscated Mode**: Applies **Local Differential Privacy (Planar Laplace Noise)** to coordinates before transmission, communicating the general neighborhood while mathematically preventing exact address deduction.
+- **Ghost Mode**: One-tap complete cloaking that instantly removes the user from the map, featuring auto-expiring timers (e.g., 30 minutes, 2 hours, 8 hours, indefinite).
+
+### 5. In-App Real-Time Chat & Live Map Reactions
+- Direct 1-on-1 messaging and custom group chat channels with unread badge indicators.
+- Interactive map reactions: Send live emoji pings and visual pokes directly onto friend markers on the map.
+
+### 6. Exploration & Footprints (Fog-of-War Discovery)
+- Gamified personal exploration: The map begins shrouded in fog-of-war and gradually reveals visited districts, streets, and territories as you explore the world.
+- Private breadcrumb trail recording with local distance-sampling that does not expose historical paths to the server.
 
 ### 7. Native Multi-Language System (i18n)
-- Built-in zero-dependency translation engine supporting **English (`en`)**, **Turkish (`tr`)**, and **Russian (`ru`)**.
-- Dynamic, instantaneous UI language switching across all navigation bars, modals, settings, and notifications without page reloads.
+- Seamless, zero-dependency runtime translation engine.
+- Instant switching between **English (`en`)**, **Turkish (`tr`)**, and **Russian (`ru`)** across the entire UI with persistent preferences.
 
 ---
 
 ## System Architecture
 
-NaviSecret is built on a modern, decoupled microservices architecture designed for resilience, security, and low latency:
+NaviSecret operates on an asynchronous, decoupled microservices stack designed for high throughput, cryptographic integrity, and minimal resource usage:
+
+<p align="center">
+  <img src="assets/system-overview.svg" alt="NaviSecret System Architecture Overview" width="920" />
+</p>
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Client Web Application                            │
-│           (React 19, TypeScript, Tailwind CSS 4, Leaflet Cartography)       │
+│                          Client Web Application                             │
+│       (React 19, TypeScript, Tailwind CSS 4, Leaflet, Web Crypto API)       │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ HTTP / WebSocket (Port 3000)
+                                       │ HTTP / WebSocket (Reverse Proxy :3000)
                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         Nginx Web Server Container                          │
-│         - Production Single Page Application (SPA) Serving                  │
-│         - Reverse Proxy for /api/* and /ws (WebSocket Upgrades)             │
+│         - Production Single Page Application (SPA) Delivery                 │
+│         - Upstream Reverse Proxy for /api/* and /ws (WebSocket upgrades)    │
 │         - Hardened Security Headers (CSP, HSTS, X-Frame-Options)            │
 │         - Dual-Stack IPv4 and IPv6 Support                                  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Upstream Reverse Proxy
+                                       │ Internal Bridge Network
                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     NaviSecret API Engine (Port 8000)                       │
+│                     NaviSecret API Engine (:8000)                           │
 │         - Node.js 22 LTS + Fastify 5.x Asynchronous Framework               │
-│         - Native Real-Time WebSocket Server (/ws)                           │
-│         - JWT Authentication & Bcrypt Password Hashing                      │
-│         - Hybrid Database Engine (PostgreSQL 16 + SQLite Fallback)          │
+│         - High-Throughput Real-Time WebSocket Server (/ws)                  │
+│         - JWT Authentication & Bcrypt Password Security                     │
+│         - Hybrid Database Engine (PostgreSQL 16 + Embedded SQLite)          │
 └───────────────────────┬─────────────────────────────┬───────────────────────┘
                         │                             │
                         ▼                             ▼
 ┌────────────────────────────────┐           ┌────────────────────────────────┐
 │      PostgreSQL 16 (:5433)     │           │         Redis 7 (:6379)        │
-│  - Spatial Coordinate Indexes  │           │  - In-Memory Geospatial Cache  │
+│  - Spatial Geometry Indexes    │           │  - In-Memory Geospatial Cache  │
 │  - Relational Data Integrity   │           │  - High-Throughput Pub/Sub     │
-│  - Users, Capsules, Friends    │           │  - Ephemeral Presence States   │
+│  - Users, Capsules, Footprints │           │  - Ephemeral Presence States   │
 └────────────────────────────────┘           └────────────────────────────────┘
 ```
 
 ---
 
-## Technology Stack
+## Technical Specifications
 
-| Layer | Technology | Version | Purpose |
+| Tier | Component | Technology | Rationale |
 | :--- | :--- | :--- | :--- |
-| **Frontend Framework** | React | 19.x | Modern UI rendering and concurrent state management |
-| **Language** | TypeScript | 5.6.x | Strict end-to-end type safety across client and server |
-| **Bundler & Tooling** | Vite | 6.x | Instant hot module replacement and optimized production builds |
-| **Styling** | Tailwind CSS | 4.x | Compact, utility-first responsive interface styling |
-| **Cartography** | Leaflet / React-Leaflet | 1.9.x | Open, vendor-neutral map engine (OpenStreetMap / Esri) |
-| **Icons** | Lucide React | Latest | Clean, scalable vector iconography |
-| **Backend Server** | Fastify (Node.js) | 5.x / 22 LTS | High-throughput asynchronous REST API and WebSocket gateway |
-| **Primary Database** | PostgreSQL | 16 Alpine | Relational storage, spatial queries, and data integrity |
-| **Fallback Database** | SQLite (better-sqlite3) | 3.x | Embedded local database fallback for lightweight deployments |
-| **Cache & Message Broker** | Redis | 7 Alpine | Geospatial caching, presence tracking, and Pub/Sub events |
-| **Reverse Proxy** | Nginx | Alpine | Static asset delivery, TLS termination, and reverse proxying |
-| **Containerization** | Docker & Docker Compose | Latest | Reproducible, 4-container production deployment |
+| **Frontend** | Single Page Application | React 19, TypeScript 5.6, Vite 6 | Concurrent rendering, type safety, instant hot reload |
+| **UI & Styling** | Visual Design System | Tailwind CSS 4, Lucide React | Modern utility-first CSS, responsive cyberpunk/futuristic aesthetic |
+| **Cartography** | Map & Tile Layers | Leaflet 1.9, React-Leaflet | Vendor-neutral, open-source cartography (OpenStreetMap + Esri satellite) |
+| **Backend API** | High-Throughput Gateway | Node.js 22 LTS, Fastify 5.x | Ultra-low overhead, rapid JSON serialization, native WebSocket support |
+| **Database** | Relational & Spatial | PostgreSQL 16 Alpine | ACID compliance, spatial coordinate querying, SQLite auto-fallback |
+| **Cache & Broker**| Presence & Pub/Sub | Redis 7 Alpine | Sub-millisecond coordinate broadcast and ephemeral state cache |
+| **Zero-Knowledge**| Proximity Verification | Circom, snarkjs, Groth16 | Provable physical proximity without coordinate leakage |
+| **Encryption** | Client-Side Cryptography| Web Crypto API, AES-256-GCM, PBKDF2 | Native in-browser authenticated encryption and key derivation |
+| **Deployment** | Containerization | Docker, Docker Compose, Nginx Alpine | Lean ~100 MB RAM multi-service deployment with health monitoring |
+
+---
+
+## Cryptographic & Mathematical Models
+
+### 1. Spatial Key Derivation for Geo-Capsules
+When a user anchors an encrypted capsule at coordinate $(\text{lat}, \text{lon})$, decryption keys are not stored on the server. Instead, keys are derived client-side:
+
+$$K = \text{PBKDF2}\Big(\text{PRF}=\text{HMAC-SHA256},\ S=\text{Geohash}_8(\text{lat}, \text{lon}) \parallel \text{Salt}_{\text{capsule}},\ c=100\,000,\ \text{len}=256\Big)$$
+
+The payload is encrypted using authenticated `AES-256-GCM`:
+
+$$C, T = \text{AES-GCM-Encrypt}(K, IV, P)$$
+
+The host server stores only the ciphertext $C$ and tag $T$. To decrypt $P$, a recipient must physically reach the geofence perimeter to construct the matching coordinate input.
+
+### 2. Zero-Knowledge Proximity Proofs (zk-SNARKs)
+Using Circom circuits verified via Groth16, the prover demonstrates knowledge of private coordinates $(x_1, y_1)$ such that the Euclidean distance to public landmark $(x_0, y_0)$ satisfies:
+
+$$(x_1 - x_0)^2 + (y_1 - y_0)^2 \le R^2$$
+
+The proof $\pi = (A \in \mathbb{G}_1, B \in \mathbb{G}_2, C \in \mathbb{G}_1)$ is verified in under 5 milliseconds with zero coordinate disclosure.
+
+### 3. Local Differential Privacy (Planar Laplace Perturbation)
+When Fuzzy / Blurred Mode is enabled, coordinates are perturbed locally via polar coordinates $(r, \theta)$:
+
+$$f(r, \theta) = \frac{\epsilon^2}{2\pi} e^{-\epsilon r}$$
+
+Where $\epsilon$ represents the privacy budget parameter, effectively masking precise building addresses into generalized district zones.
 
 ---
 
@@ -140,57 +188,53 @@ NaviSecret is built on a modern, decoupled microservices architecture designed f
 ```
 NaviSecret/
 ├── apps/
-│   ├── web/                          # Frontend Application (React 19 + Vite)
+│   ├── web/                          # Production Frontend (React 19 + Vite)
 │   │   ├── src/
 │   │   │   ├── components/           # UI Components (Map, Radar, Modals, Chat, Dock)
-│   │   │   ├── hooks/                # Custom React Hooks (useAuth, useLocation, useLanguage)
+│   │   │   │   ├── auth/             # Login & Registration Form
+│   │   │   │   ├── bumps/            # NaviBump Proximity Detection Panel
+│   │   │   │   ├── capsules/         # Secret Capsule Creation & Unlock Dialogues
+│   │   │   │   ├── chat/             # Direct & Group Real-Time Chat
+│   │   │   │   ├── map/              # Leaflet Map, Radar, Trails, Exploration
+│   │   │   │   └── common/           # Multi-Language Selector & Dynamic Icons
+│   │   │   ├── hooks/                # React Hooks (useAuth, useLocation, useLanguage)
 │   │   │   ├── i18n/                 # Localization Engine (en, tr, ru dictionaries & store)
-│   │   │   └── types/                # Frontend Data Models & Interfaces
-│   │   └── vite.config.ts            # Vite Build & Proxy Configuration
+│   │   │   └── types/                # Domain Types & Interfaces
+│   │   └── vite.config.ts            # Vite Configuration
 │   │
-│   └── server/                       # Backend Application (Fastify + Node.js 22)
+│   └── server/                       # Production Backend API (Fastify + Node.js 22)
 │       ├── src/
-│       │   ├── database/             # PostgreSQL & SQLite Hybrid Database Connector
-│       │   ├── modules/              # Modular Domain Routes:
-│       │   │   ├── auth/             # User Registration, Login, Token Management
-│       │   │   ├── capsules/         # Secret Geo-Capsule Creation & Unlock Logic
-│       │   │   ├── chat/             # Direct & Group Messaging Endpoints
-│       │   │   ├── footprints/       # Trail Recording & Visited Exploration
-│       │   │   ├── groups/           # Social Circles & Group Management
-│       │   │   ├── places/           # Saved Favorite Locations
-│       │   │   ├── presence/         # Real-Time Location Pulses & Ghost Mode
-│       │   │   ├── reactions/        # Emoji Reactions & Pings
-│       │   │   └── social/           # Friendship Requests, Accept, Block Lists
-│       │   ├── realtime/             # Native WebSocket Server & Event Handler
+│       │   ├── database/             # PostgreSQL / SQLite Hybrid Connector & Schema
+│       │   ├── modules/              # Domain Modules (auth, capsules, chat, presence, social)
+│       │   ├── realtime/             # Native WebSocket Real-Time Server
 │       │   ├── redis/                # Redis Pub/Sub & Geospatial Cache Connector
-│       │   └── index.ts              # Server Entrypoint
+│       │   └── index.ts              # Fastify Server Entrypoint
 │       └── Dockerfile                # Production Server Containerfile
+│
+├── packages/
+│   ├── sdk/                          # @navisecret/sdk — Core Location Sharing Client
+│   └── geo-drop/                     # @navisecret/geo-drop — Cryptographic Drop Engine
+│       └── circuits/                 # Circom zk-SNARK Proximity Circuits
 │
 ├── docker/
 │   ├── nginx/
-│   │   └── default.conf              # Nginx Reverse Proxy & Header Configuration
+│   │   └── default.conf              # Nginx Reverse Proxy & Header Hardening
 │   └── init-db/
-│       └── 01-schema.sql             # PostgreSQL Database Schema Bootstrap
+│       └── 01-schema.sql             # PostgreSQL Container Bootstrap Script
 │
-├── assets/                           # Vector Logos, Icons, and Architecture Diagrams
-├── compose.yaml                      # Complete Docker Compose Stack Definition
-├── Dockerfile                        # Production Web Frontend Containerfile
+├── assets/                           # Vector Schematics, Visual Flows, and Logos
+├── compose.yaml                      # 4-Service Docker Compose Production Stack
+├── Dockerfile                        # Nginx Web Frontend Containerfile
 └── package.json                      # Monorepo Workspace Configuration
 ```
 
 ---
 
-## Production Deployment with Docker
+## Quick Start & Deployment
 
-NaviSecret is ready to run out of the box with Docker Compose.
+### Production Deployment via Docker Compose (Recommended)
 
-### Prerequisites
-
-- **Docker Engine** (v24.0 or higher)
-- **Docker Compose** (v2.20 or higher)
-- Available ports: `3000` (Web UI) and `8000` (API Gateway)
-
-### Quick Start
+NaviSecret launches as a fully self-contained 4-container stack requiring zero external database or BaaS accounts:
 
 1. **Clone the repository:**
    ```bash
@@ -198,13 +242,13 @@ NaviSecret is ready to run out of the box with Docker Compose.
    cd NaviSecret
    ```
 
-2. **Prepare environment configuration:**
+2. **Configure environment settings:**
    ```bash
    cp .env.example .env
    ```
-   *Verify or adjust your `JWT_SECRET`, database credentials, and external ports.*
+   *Edit `.env` to customize your `JWT_SECRET`, database credentials, and domain bindings.*
 
-3. **Start the complete stack:**
+3. **Spin up the stack:**
    ```bash
    docker compose up -d --build
    ```
@@ -214,7 +258,7 @@ NaviSecret is ready to run out of the box with Docker Compose.
    docker compose ps
    ```
 
-   All four services should report **Up (healthy)**:
+   All 4 containers will report **Up (healthy)**:
    ```
    NAME                  IMAGE                   STATUS                    PORTS
    navisecret_api        navisecret-api:latest   Up (healthy)              0.0.0.0:8000->8000/tcp
@@ -223,16 +267,16 @@ NaviSecret is ready to run out of the box with Docker Compose.
    navisecret_web        navisecret-web:latest   Up (healthy)              0.0.0.0:3000->80/tcp
    ```
 
-5. **Open the application:**
+5. **Access NaviSecret:**
    - Web Application: `http://localhost:3000`
    - API Health Check: `http://localhost:8000/health`
-   - WebSocket Server: `ws://localhost:8000/ws`
+   - Real-Time WebSocket Server: `ws://localhost:8000/ws`
 
 ---
 
-## Local Development Setup
+## Local Development Workflow
 
-For running and modifying the code directly on your local machine:
+To work directly on the codebase:
 
 ### Prerequisites
 
@@ -246,75 +290,68 @@ For running and modifying the code directly on your local machine:
    pnpm install
    ```
 
-2. **Start the backend server:**
+2. **Build internal workspace packages:**
+   ```bash
+   pnpm build
+   ```
+
+3. **Start the Fastify API Server:**
    ```bash
    pnpm dev:server
    ```
-   *Runs Fastify on `http://localhost:8000` with hot-reload enabled.*
+   *Runs on `http://localhost:8000` with hot reload enabled.*
 
-3. **Start the frontend application:**
+4. **Start the Vite Web Application:**
    ```bash
    pnpm dev:web
    ```
-   *Runs Vite on `http://localhost:5173`.*
+   *Runs on `http://localhost:5173`.*
 
-4. **Build production bundles:**
+5. **Run test verification suite:**
    ```bash
-   pnpm build:server
-   pnpm build:web
+   pnpm test
    ```
 
 ---
 
-## REST API Reference
+## REST & WebSocket API Reference
 
 All protected endpoints require an `Authorization: Bearer <token>` header.
 
-### Authentication (`/api/auth`)
+### Authentication & Profiles (`/api/auth`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Register a new user with username and password |
-| `POST` | `/api/auth/login` | Authenticate user and obtain a JWT bearer token |
+| `POST` | `/api/auth/register` | Register new account with username and password |
+| `POST` | `/api/auth/login` | Authenticate and obtain JWT bearer token |
 | `GET` | `/api/auth/me` | Fetch authenticated user profile |
 | `POST` | `/api/auth/avatar` | Upload and update user avatar image |
 
-### Presence & Location (`/api/presence`)
+### Location & Visibility (`/api/presence`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/presence/pulse` | Send location heartbeat (latitude, longitude, accuracy) |
-| `GET` | `/api/presence/friends` | Get real-time coordinates of visible friends |
+| `POST` | `/api/presence/pulse` | Publish location heartbeat (lat, lon, accuracy) |
+| `GET` | `/api/presence/friends` | Retrieve real-time coordinates of visible friends |
 | `POST` | `/api/presence/ghost` | Toggle Ghost Mode on or off with expiration timer |
 
 ### Secret Capsules (`/api/capsules`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/capsules` | Create a new location-anchored secret capsule |
-| `GET` | `/api/capsules/nearby` | Retrieve capsules within the user's visible vicinity |
-| `POST` | `/api/capsules/:id/unlock` | Verify proximity and unlock capsule contents |
+| `POST` | `/api/capsules` | Create a location-anchored encrypted capsule |
+| `GET` | `/api/capsules/nearby` | Retrieve capsule headers within current bounding box |
+| `POST` | `/api/capsules/:id/unlock` | Verify proximity proof and unlock secret content |
 
-### Social & Friends (`/api/social`)
+### Social & Friendships (`/api/social`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/social/friends` | List accepted friends |
-| `POST` | `/api/social/request` | Send a friend request by username or tag |
-| `POST` | `/api/social/accept` | Accept an incoming friend request |
-| `POST` | `/api/social/block` | Block a user from viewing location |
+| `GET` | `/api/social/friends` | List accepted friends with online status |
+| `POST` | `/api/social/request` | Send friend request by username or tag |
+| `POST` | `/api/social/accept` | Accept incoming friend invitation |
+| `POST` | `/api/social/block` | Block user from location tracking |
 
-### Chat & Messaging (`/api/chat`)
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/chat/conversations` | List active conversations and recent messages |
-| `GET` | `/api/chat/:userId/messages` | Retrieve message history with a friend |
-| `POST` | `/api/chat/:userId/messages` | Send a direct message |
-
----
-
-## Real-Time WebSocket Protocol
-
-Clients connect to `ws://localhost:8000/ws` with token authentication.
+### Real-Time WebSocket Protocol (`ws://localhost:8000/ws`)
 
 ```json
-// Client -> Server: Location Update
+// Client -> Server: Proximity location pulse
 {
   "type": "LOCATION_PULSE",
   "data": {
@@ -324,7 +361,7 @@ Clients connect to `ws://localhost:8000/ws` with token authentication.
   }
 }
 
-// Server -> Client: Friend Moved
+// Server -> Client: Friend location update
 {
   "event": "FRIEND_LOCATION",
   "data": {
@@ -339,18 +376,18 @@ Clients connect to `ws://localhost:8000/ws` with token authentication.
 
 ---
 
-## Security & Privacy Guidelines
+## Security & Privacy Highlights
 
-- **Bcrypt Password Security**: All user credentials are encrypted with salt rounds before database persistence.
-- **Strict Network Isolation**: PostgreSQL and Redis containers do not expose public WAN ports in production; only Nginx and the Fastify API accept ingress traffic.
-- **Geofence Enforcement**: Capsule content is withheld by the backend until the client coordinates genuinely fall within the designated unlock perimeter.
-- **Zero Third-Party Tracking**: No telemetry, analytics pixels, or commercial tracking libraries are included in the frontend bundle.
+- **Zero Corporate Surveillance**: Zero tracking pixels, telemetry probes, or commercial advertising SDKs.
+- **Client-Side Content Isolation**: Capsule payloads are encrypted before leaving your browser; neither database administrators nor network sniffers can view secrets in plaintext.
+- **Bcrypt Password Security**: Credentials hashed with modern salt cost factors.
+- **Hardened Container Sandbox**: Isolated Docker bridge network, strict CSP headers, and unprivileged container users.
 
 ---
 
-## License
+## License & Ownership
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+NaviSecret is open-source software licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ```
 Copyright (c) 2026 Ersin Sandal (SliferSoft)

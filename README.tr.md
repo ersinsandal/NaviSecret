@@ -2,12 +2,13 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="assets/logo-light.svg" />
-    <img src="assets/logo-dark.svg" alt="NaviSecret Logo" width="340" />
+    <img src="assets/logo-dark.svg" alt="NaviSecret Logo" width="360" />
   </picture>
 </p>
 
 <p align="center">
-  <strong>Gizlilik Öncelikli Gerçek Zamanlı Konum Paylaşımı ve Konuma Bağlı Gizli Kapsül Platformu</strong>
+  <strong>Her mekan bir sır saklar.</strong><br />
+  <em>Gizlilik öncelikli mekânsal sosyal ağ, şifreli konum kapsülleri, gerçek zamanlı yakınlık keşfi ve sıfır bilgi konum ispatları.</em>
 </p>
 
 <p align="center">
@@ -24,91 +25,112 @@
   <img src="https://img.shields.io/badge/TypeScript-5.6-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16">
   <img src="https://img.shields.io/badge/Redis-7-DC382D.svg?style=flat-square&logo=redis&logoColor=white" alt="Redis 7">
+  <img src="https://img.shields.io/badge/ZKP-Groth16-F58025.svg?style=flat-square" alt="Groth16 ZKP">
+  <img src="https://img.shields.io/badge/Şifreleme-AES--256--GCM-9cf.svg?style=flat-square" alt="AES-256-GCM">
   <img src="https://img.shields.io/badge/Docker-Hazır-2496ED.svg?style=flat-square&logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/Diller-TR%20%7C%20EN%20%7C%20RU-brightgreen.svg?style=flat-square" alt="Çoklu Dil">
 </p>
 
 ---
 
-## Genel Bakış
+## Projenin Vizyonu: "Her Mekan Bir Sır Saklar"
 
-**NaviSecret**, açık kaynaklı, bağımsız ve gizlilik odaklı modern bir mekânsal sosyal platformdur. Arkadaşlarınızla gerçek zamanlı konum paylaşımını, fiziksel yakınlık karşılaşmalarını ve yalnızca gerçek dünyada ilgili koordinatlara gidildiğinde açılabilen konuma kilitli şifreli dijital kapsülleri bir araya getirir.
+Sürekli gözetim altında tutulduğumuz dijital dünyada kişisel gizlilik, kolaylık uğruna feda edildi. Ticari harita ve konum servisleri; kullanıcıların hassas GPS hareketlerini merkezi sunucularda depolamakta, reklam veri simsarlarına aktarmakta ve insan adımlarını birer gelir kalemine dönüştürmektedir.
 
-Kullanıcıların koordinat geçmişlerini kaydedip ticarileştiren geleneksel takip uygulamalarının aksine NaviSecret; gizliliği, tam bağımsızlığı ve kendi sunucunuzda barındırma (self-hosting) ilkelerini esas alır:
-- **Harici Bulut Bağımlılığı Yok**: Platform %100 bağımsızdır ve kendi sunucunuzda çalışır. Harici Backend-as-a-Service (BaaS) platformlarına veya ücretli ticari harita servis sağlayıcılarına ihtiyaç duymaz.
-- **Kapsamlı Gizlilik ve Hayalet Modu (Ghost Mode)**: Kullanıcılar konum görünürlüklerini diledikleri an hassas, bulanıklaştırılmış (yaklaşık) veya anında haritadan kaybolmayı sağlayan süreli Hayalet Modu olarak ayarlayabilir.
-- **Konuma Kilitli Kapsüller**: Belirli fiziksel noktalara şifreli mesajlar, fotoğraflar ve notlar bırakılabilir. Bu kapsüller yalnızca yetkili kişiler coğrafi sınıra (geofence) fiziksel olarak yaklaştığında açılır.
-- **Minimum Donanım Kaynağı Tüketimi**: Tüm üretim ortamı, Docker Compose üzerinden çalışan optimize 4 mikroservis konteyneriyle ayağa kalkar ve toplamda yalnızca ~100 MB RAM tüketir.
+**NaviSecret, fiziksel mekânın büyüsünü ve bireysel gizlilik egemenliğini geri getiriyor.**
+
+Sıradan bir park bankının yanından, tarihi bir sokak çeşmesinden veya ıssız bir tepeden geçtiğinizi düşünün... Tam o koordinatta asılı duran, görünmez ve şifreli bir dijital kapsül var: Yıllar önce oraya bırakılmış duygusal bir mektup, bir gezginin fotoğrafı, gizli bir hazine avının ipucu veya geleceğe bırakılmış bir ses kaydı. Bu kapsülü binlerce kilometre uzaktaki bir koltuktan açamazsınız. Sunucunun kendisi dahi içeriği göremez. **Sırrı çözebilmek için bizzat o noktada, fiziksel olarak bulunmanız gerekir.**
+
+NaviSecret, fiziksel dünyayı insan anılarının, tesadüfi karşılaşmaların ve güvenli dijital izlerin şifreli bir tuvaline dönüştürür:
+- **Gerçek Dünyaya Anı ve Sır Bırakma**: Metin, fotoğraf veya notları koordinatlara kilitleyin. Yalnızca hedef alana (örneğin 20 metre yakınına) fiziksel olarak giren kişiler içeriğe erişebilir.
+- **Fiziksel Yakınlık Karşılaşmaları (NaviBump)**: Arkadaşlarınızla fiziksel dünyada yollarınız kesiştiğinde anında bildirim alın ve tek dokunuşla güvenli eşleşme başlatın.
+- **Sıfır Bilgi Matematiksel Gizliliği (NaviZKP)**: Bir etkinliğe, kontrol noktasına veya mekana yakın olduğunuzu; kesin GPS koordinatlarınızı $(\text{enlem}, \text{boylam})$ sunucuya dahi vermeden kriptografik olarak kanıtlayın.
+- **Tam Bağımsız ve Kendi Sunucunda (Self-Hosted)**: Üçüncü taraf harici bulut servislerine bağımlılık yok. Kendi donanımınızda sadece ~100 MB RAM tüketen bağımsız bir mikroservis kümesi olarak çalışır.
 
 ---
 
-## Temel Yetenekler ve Modüller
+## NaviSecret ile Neler Yapabilirsiniz?
 
-### 1. Canlı Sosyal Harita ve Radar
-- Yerel WebSocket sunucusu ve Redis Pub/Sub altyapısı sayesinde arkadaşlar arasında saniyenin altında gecikmeyle anlık konum senkronizasyonu.
-- Harici takip kodları içermeyen, OpenStreetMap cadde haritası ile Esri uydu görünümü arasında kesintisiz geçiş sağlayan Leaflet kartografyası.
-- Yakındaki arkadaşların ve kapsüllerin mesafesini ve yönünü gösteren görsel mekânsal radar.
+### 1. Konuma Kilitli Gizli Kapsüller Bırakın (NaviDrop)
+- **Zaman ve Anı Kapsülleri**: Eşinizle ilk karşılaştığınız kafeye özel bir not bırakın; bu not sadece yıldönümünüzde ve sadece o kafeye tekrar gidildiğinde açılsın.
+- **Şehir İçi Hazine Avları (Scavenger Hunt)**: Her ipucunun bir sonraki fiziksel durağın koordinatlarını açtığı interaktif macera rotaları oluşturun.
+- **Dijital Gizli Bırakmalar (Dead-Drop)**: Hassas dosyaları veya notları uzaktan erişime kapalı olarak, sadece belirli bir sokak köşesinde fiziksel olarak duran kişilerin açabileceği şekilde paylaşın.
+- **Kriptografik Mekânsal Kilit**: İçerik istemci tarayıcısında `AES-256-GCM` ile şifrelenir. Anahtar, hedef coğrafi sınıra (geofence) fiziksel olarak yaklaşıldığında PBKDF2 algoritmasıyla türetilir. Sunucu yalnızca şifreli blok görür; açık metin içeriğe asla vakıf olamaz.
 
-### 2. Konuma Sabitlenmiş Gizli Kapsüller (NaviDrop)
-- Belirli koordinatlara özel açılma yarıçapı (örn. 25m, 50m, 100m) tanımlanarak mesaj, medya ve ipuçları bırakabilme.
-- İçerik sunucuda şifreli olarak tutulur; istemci yalnızca hedefe fiziksel olarak ulaştığında doğrulama yaparak içeriği açabilir.
-- İsteğe bağlı olarak süre kısıtlamalı veya gecikmeli açılan zaman kapsülleri oluşturma imkânı.
+<p align="center">
+  <img src="assets/geodrop-flow.svg" alt="GeoDrop Mimari Akışı" width="720" />
+</p>
 
-### 3. NaviBump (Fiziksel Yakınlık Eşleşmesi)
-- Ortak arkadaşların fiziksel dünyada yolları kesiştiğinde kullanıcıları uyaran akıllı yakınlık algılama.
-- Tek dokunuşla cihazları anında eşleştirme ve canlı sohbete başlama.
+### 2. NaviBump ve Radar ile Yakındaki Kişileri Keşfedin
+- **Mekânsal Radar**: Çevrenizdeki arkadaşların ve keşfedilen kapsüllerin yönünü ve mesafesini anlık olarak gösteren interaktif pusula radarı.
+- **NaviBump Fiziksel Eşleşme**: NaviSecret kullanan iki arkadaş sokakta birbirine yaklaştığında sistem bunu algılar; tek dokunuşla hızlı temas kurulmasını ve güvenli sohbet başlatılmasını sağlar.
+- **Yakındaki Kişilerle Güvenli İletişim**: Ev adresinizi veya tam rotanızı ifşa etmeden yakın çevrenizdeki tanıdıklarla anlık iletişimde kalın.
 
-### 4. Gizlilik Kalkanı ve Hayalet Modu
-- **Hassas Konum Modu**: Seçilen arkadaşlara kesin GPS koordinatlarını iletir.
-- **Bulanık Konum Modu**: Koordinatları rastgele gürültüyle öteleyerek kesin adres vermeden yaklaşık bölgeyi paylaşır.
-- **Hayalet Modu (Ghost Mode)**: Kullanıcıyı tek tuşla haritadan tamamen gizler; 1 saat, 8 saat veya süresiz gibi geri sayım seçenekleri sunar.
+### 3. Sıfır Bilgi İspatları ile Matematiksel Anonimlik (NaviZKP)
+- Circom diliyle geliştirilmiş ve Groth16 protokolüyle doğrulanan zk-SNARK devrelerini temel alır.
+- Kullanıcının şu iddiayı kesin matematiksel doğrulukla ispatlamasını sağlar:
+  $$\text{"Şu anda } (x_0, y_0) \text{ merkezli mekana en fazla } R \text{ metre mesafedeyim."}$$
+- Doğrulama işlemi, kullanıcının gerçek koordinatlarını $(x_1, y_1)$ sunucuya veya üçüncü kişilere **sıfır sızıntı** ile gizli tutarak tamamlar.
 
-### 5. Anlık Sohbet ve Canlı Tepkiler
-- Arkadaşlar arasında uçtan uca birebir ve grup mesajlaşması.
-- Harita üzerinde doğrudan arkadaşların profillerine gönderilebilen anlık emoji tepkileri ve dürtmeler.
+<p align="center">
+  <img src="assets/zkp-flow.svg" alt="Sıfır Bilgi Yakınlık İspatı Akışı" width="720" />
+</p>
 
-### 6. Ayak İzleri ve Keşif Haritası (Footprints)
-- Sunucu tarafında kalıcı rota izi ifşa etmeden kullanıcının kişisel keşif ve seyahat geçmişini kaydeder.
-- Gezilen ve keşfedilen mahalleleri, bölgeleri harita üzerinde açan oyunlaştırılmış keşif katmanı.
+### 4. Gelişmiş Gizlilik Kalkanı ve Hayalet Modu (Ghost Mode)
+- **Hassas Mod**: Seçtiğiniz en yakın arkadaşlarınıza kesin GPS konumunuzu gösterir.
+- **Bulanık Mod (Fuzzy)**: Koordinatları iletmeden önce istemci üzerinde **Yerel Diferansiyel Gizlilik (Planar Laplace Gürültüsü)** uygular; mahallenizi belli eder fakat sokak ve kapı numaranızı matematiksel olarak gizler.
+- **Hayalet Modu**: Kullanıcıyı haritadan anında silen acil görünmezlik modu. İsteğe bağlı olarak 30 dakika, 2 saat, 8 saat veya süresiz geri sayım sayacı tanımlanabilir.
+
+### 5. Dahili Canlı Sohbet ve Harita Tepkileri
+- Arkadaşlarla birebir uçtan uca şifreli mesajlaşma ve özel grup sohbetleri.
+- Harita üzerinde arkadaşların profillerine doğrudan gönderilebilen anlık emoji pings ve dürtmeler.
+
+### 6. Ayak İzleri ve Keşif Haritası (Sis Perdesi)
+- Oyunlaştırılmış kişisel keşif: Harita başlangıçta sis perdesi (fog-of-war) ile kaplıdır; dünyayı gezdikçe keşfettiğiniz mahalleler ve sokaklar aydınlanır.
+- Sunucuda kalıcı rota geçmişi tutulmaksızın, tamamen cihazınızda saklanan özel seyahat izleri.
 
 ### 7. Yerleşik Çok Dilli Altyapı (i18n)
-- Harici kütüphane ağırlığı taşımayan, reaktif ve tip güvenli yerelleştirme motoru.
-- Sayfa yenilemesine gerek kalmadan **Türkçe (`tr`)**, **İngilizce (`en`)** ve **Rusça (`ru`)** dilleri arasında anında geçiş.
+- Harici devasa paketlere ihtiyaç duymayan hafif ve tam tip güvenli yerelleştirme motoru.
+- Sayfa yenilemeden **Türkçe (`tr`)**, **İngilizce (`en`)** ve **Rusça (`ru`)** dilleri arasında anında geçiş.
 
 ---
 
 ## Sistem Mimarisi
 
-NaviSecret; dayanıklılık, güvenlik ve düşük gecikme süresi için tasarlanmış bağımsız bir mikroservis mimarisine sahiptir:
+NaviSecret; yüksek verim, kriptografik bütünlük ve asgari donanım tüketimi amacıyla tasarlanmış olay güdümlü bir mikroservis yapısına sahiptir:
+
+<p align="center">
+  <img src="assets/system-overview.svg" alt="NaviSecret Sistem Mimarisi Şeması" width="920" />
+</p>
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           İstemci Web Uygulaması                            │
-│           (React 19, TypeScript, Tailwind CSS 4, Leaflet Harita)            │
+│       (React 19, TypeScript, Tailwind CSS 4, Leaflet, Web Crypto API)       │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ HTTP / WebSocket (Port 3000)
+                                       │ HTTP / WebSocket (Ters Vekil :3000)
                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         Nginx Web Sunucu Konteyneri                         │
 │         - Üretim Tek Sayfa Uygulaması (SPA) Sunumu                          │
 │         - /api/* ve /ws (WebSocket) İstekleri İçin Ters Vekil (Proxy)       │
 │         - Katı Güvenlik Başlıkları (CSP, HSTS, X-Frame-Options)             │
-│         - Çift Yığın IPv4 ve IPv6 Desteği                                   │
+│         - Çift Yığın IPv4 ve IPv6 Ağ Desteği                                │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Upstream Ters Vekil
+                                       │ Dahili Köprü Ağı (Bridge)
                                        ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     NaviSecret API Çekirdeği (Port 8000)                    │
+│                     NaviSecret API Çekirdeği (:8000)                        │
 │         - Node.js 22 LTS + Fastify 5.x Asenkron Web İskeleti                │
-│         - Yerel Gerçek Zamanlı WebSocket Sunucusu (/ws)                     │
-│         - JWT Kimlik Doğrulama ve Bcrypt Parola Şifreleme                   │
-│         - Hibrit Veritabanı Motoru (PostgreSQL 16 + SQLite Yedekli)         │
+│         - Yüksek Kapasiteli Gerçek Zamanlı WebSocket Sunucusu (/ws)         │
+│         - JWT Kimlik Doğrulama ve Bcrypt Parola Güvenliği                   │
+│         - Hibrit Veritabanı Motoru (PostgreSQL 16 + Gömülü SQLite)          │
 └───────────────────────┬─────────────────────────────┬───────────────────────┘
                         │                             │
                         ▼                             ▼
 ┌────────────────────────────────┐           ┌────────────────────────────────┐
 │      PostgreSQL 16 (:5433)     │           │         Redis 7 (:6379)        │
-│  - Mekânsal Koordinat İndeksleri│          │  - Bellek İçi Mekânsal Önbellek│
+│  - Mekânsal Geometri İndeksleri│           │  - Bellek İçi Mekânsal Önbellek│
 │  - İlişkisel Veri Bütünlüğü    │           │  - Yüksek Kapasiteli Pub/Sub   │
 │  - Kullanıcılar, Kapsüller     │           │  - Anlık Çevrimiçi Durumları   │
 └────────────────────────────────┘           └────────────────────────────────┘
@@ -116,22 +138,48 @@ NaviSecret; dayanıklılık, güvenlik ve düşük gecikme süresi için tasarla
 
 ---
 
-## Teknoloji Yığını
+## Teknik Özellikler
 
-| Katman | Teknoloji | Sürüm | Görevi |
+| Katman | Bileşen | Teknoloji | Seçim Gerekçesi |
 | :--- | :--- | :--- | :--- |
-| **Önyüz İskeleti** | React | 19.x | Modern UI bileşenleri ve eşzamanlı durum yönetimi |
-| **Programlama Dili** | TypeScript | 5.6.x | İstemci ve sunucu genelinde katı tip güvenliği |
-| **Derleyici & Araçlar**| Vite | 6.x | Anlık hot-reload ve optimize edilmiş üretim derlemesi |
-| **Stil ve Tasarım** | Tailwind CSS | 4.x | Kompakt ve hızlı modern CSS altyapısı |
-| **Kartografya** | Leaflet / React-Leaflet | 1.9.x | Açık kaynaklı ve bağımsız harita motoru |
-| **İkon Seti** | Lucide React | Güncel | Vektörel ve performanslı ikonlar |
-| **API Sunucusu** | Fastify (Node.js) | 5.x / 22 LTS | Düşük bellek tüketimli, yüksek verimli REST ve WebSocket sunucusu |
-| **Ana Veritabanı** | PostgreSQL | 16 Alpine | İlişkisel depolama, mekânsal sorgular ve veri bütünlüğü |
-| **Yedek Veritabanı** | SQLite (better-sqlite3) | 3.x | Küçük kurulumlar için otomatik devreye giren gömülü veritabanı |
-| **Önbellek & Pub/Sub** | Redis | 7 Alpine | Mekânsal önbellek, konum dağıtımı ve Pub/Sub kuyruğu |
-| **Ters Vekil** | Nginx | Alpine | Statik dosya dağıtımı, güvenlik başlıkları ve ters vekillik |
-| **Konteynerleştirme** | Docker & Docker Compose | Güncel | Toplamda ~100 MB RAM harcayan 4 konteynerlik dağıtım |
+| **Önyüz** | Tek Sayfa Uygulaması (SPA) | React 19, TypeScript 5.6, Vite 6 | Eşzamanlı render, tip güvenliği, milisaniyeler içinde hot reload |
+| **Arayüz Tasarımı** | Stil ve İkonografi | Tailwind CSS 4, Lucide React | Modern CSS altyapısı, fütüristik/siberpunk görsel kimlik |
+| **Kartografya** | Harita ve Katmanlar | Leaflet 1.9, React-Leaflet | Bağımsız, telif ücreti olmayan harita (OpenStreetMap + Esri uydu) |
+| **API Sunucusu** | Yüksek Verimli Ağ Geçidi | Node.js 22 LTS, Fastify 5.x | Minimum sistem yükü, hızlı JSON serileştirme, yerel WebSocket |
+| **Veritabanı** | İlişkisel ve Mekânsal Motor | PostgreSQL 16 Alpine | ACID uyumluluğu, mekânsal indeksler, otomatik SQLite yedek motoru |
+| **Önbellek & Mesaj**| Anlık Konum Dağıtımı | Redis 7 Alpine | Mikrosaniye düzeyinde konum dağıtımı ve Pub/Sub kuyruk yönetimi |
+| **Sıfır Bilgi (ZKP)**| Yakınlık Doğrulama | Circom, snarkjs, Groth16 | Koordinatları sızdırmadan fiziksel yakınlığı ispatlayan matematiksel kanıt |
+| **Şifreleme** | İstemci Tarafı Kriptografi | Web Crypto API, AES-256-GCM, PBKDF2 | Tarayıcıda yerel donanım hızlandırmalı şifreleme ve anahtar türetimi |
+| **Dağıtım** | Konteynerleştirme | Docker, Docker Compose, Nginx Alpine | Toplamda yalnızca ~100 MB RAM tüketen izole 4 konteynerlik mimari |
+
+---
+
+## Kriptografik ve Matematiksel Modeller
+
+### 1. Geo-Kapsüller İçin Mekânsal Anahtar Türetimi
+Bir kullanıcı $(\text{enlem}, \text{boylam})$ koordinatına bir kapsül kilitlediğinde, şifre çözme anahtarı sunucuya gönderilmez. Anahtar doğrudan istemcide türetilir:
+
+$$K = \text{PBKDF2}\Big(\text{PRF}=\text{HMAC-SHA256},\ S=\text{Geohash}_8(\text{lat}, \text{lon}) \parallel \text{Salt}_{\text{kapsul}},\ c=100\,000,\ \text{len}=256\Big)$$
+
+Veri gövdesi `AES-256-GCM` ile şifrelenir:
+
+$$C, T = \text{AES-GCM-Encrypt}(K, IV, P)$$
+
+Sunucuda yalnızca şifreli metin $C$ ve doğrulama etiketi $T$ saklanır. $P$ içeriğini açmak isteyen kişi ancak fiziksel olarak o koordinata giderek doğru anahtarı türetebilir.
+
+### 2. Sıfır Bilgi Yakınlık İspatları (zk-SNARKs)
+Circom devresi ve Groth16 protokolü kullanılarak, ispatçı gizli $(x_1, y_1)$ koordinatlarının halka açık $(x_0, y_0)$ mekanına olan mesafesini ispatlar:
+
+$$(x_1 - x_0)^2 + (y_1 - y_0)^2 \le R^2$$
+
+Üretilen $\pi = (A \in \mathbb{G}_1, B \in \mathbb{G}_2, C \in \mathbb{G}_1)$ kanıtı, kullanıcının gerçek koordinatlarını hiçbir şekilde açık etmeden 5 milisaniyenin altında doğrulanır.
+
+### 3. Düzlemsel Laplace Diferansiyel Gizlilik Modeli
+Bulanık mod aktifken koordinatlar istemciden çıkmadan önce kutupsal $(r, \theta)$ düzleminde öteleme gürültüsüne tabi tutulur:
+
+$$f(r, \theta) = \frac{\epsilon^2}{2\pi} e^{-\epsilon r}$$
+
+Burada $\epsilon$ gizlilik bütçesini ifade eder; bina ve sokak seviyesindeki hassas konumları semt ve bölge geneline güvenle yayar.
 
 ---
 
@@ -140,59 +188,55 @@ NaviSecret; dayanıklılık, güvenlik ve düşük gecikme süresi için tasarla
 ```
 NaviSecret/
 ├── apps/
-│   ├── web/                          # Önyüz Uygulaması (React 19 + Vite)
+│   ├── web/                          # Üretim Önyüz Uygulaması (React 19 + Vite)
 │   │   ├── src/
-│   │   │   ├── components/           # Arayüz Bileşenleri (Harita, Radar, Modallar, Sohbet, Dock)
+│   │   │   ├── components/           # Modallar, Harita, Radar, Sohbet, Alt Panel
+│   │   │   │   ├── auth/             # Kayıt ve Giriş Formları
+│   │   │   │   ├── bumps/            # NaviBump Yakınlık Algılama Paneli
+│   │   │   │   ├── capsules/         # Gizli Kapsül Bırakma ve Kilit Açma Modalları
+│   │   │   │   ├── chat/             # Birebir ve Grup Sohbet Bileşenleri
+│   │   │   │   ├── map/              # Leaflet Harita, Radar, Patika ve Keşif Katmanları
+│   │   │   │   └── common/           # Çok Dilli Dil Seçici ve Fütüristik İkonlar
 │   │   │   ├── hooks/                # Özel React Kancaları (useAuth, useLocation, useLanguage)
-│   │   │   ├── i18n/                 # Çok Dilli Çeviri Motoru (en, tr, ru sözlükleri ve store)
+│   │   │   ├── i18n/                 # Yerelleştirme Motoru (en, tr, ru sözlükleri ve store)
 │   │   │   └── types/                # Veri Tipleri ve Modelleri
-│   │   └── vite.config.ts            # Vite Derleme ve Proxy Ayarları
+│   │   └── vite.config.ts            # Vite Yapılandırması
 │   │
-│   └── server/                       # Sunucu Uygulaması (Fastify + Node.js 22)
+│   └── server/                       # Üretim API Sunucusu (Fastify + Node.js 22)
 │       ├── src/
-│       │   ├── database/             # PostgreSQL ve SQLite Hibrit Veritabanı Bağlayıcısı
-│       │   ├── modules/              # Modüler Rota Yapısı:
-│       │   │   ├── auth/             # Kayıt, Giriş ve Oturum Yönetimi
-│       │   │   ├── capsules/         # Konuma Bağlı Gizli Kapsüller ve Kilit Açma
-│       │   │   ├── chat/             # Birebir ve Grup Sohbet Rotaları
-│       │   │   ├── footprints/       # Ayak İzleri ve Keşif Geçmişi
-│       │   │   ├── groups/           # Arkadaş Grupları ve Yönetimi
-│       │   │   ├── places/           # Kaydedilen Favori Mekanlar
-│       │   │   ├── presence/         # Canlı Konum Bildirimi ve Hayalet Modu
-│       │   │   ├── reactions/        # Harita Üzerinden Emoji Tepkileri
-│       │   │   └── social/           # Arkadaşlık İstekleri, Kabul ve Engelleme
-│       │   ├── realtime/             # Yerel WebSocket Sunucusu ve Olay Yöneticisi
-│       │   ├── redis/                # Redis Pub/Sub ve Önbellek Bağlayıcısı
-│       │   └── index.ts              # Sunucu Başlangıç Dosyası
+│       │   ├── database/             # PostgreSQL / SQLite Hibrit Bağlantı ve Şemalar
+│       │   ├── modules/              # Modüler Rotalar (auth, capsules, chat, presence, social)
+│       │   ├── realtime/             # Yerel WebSocket Sunucusu ve Olay Dağıtıcı
+│       │   ├── redis/                # Redis Pub/Sub ve Mekânsal Önbellek İstemcisi
+│       │   └── index.ts              # Fastify Sunucu Başlangıç Dosyası
 │       └── Dockerfile                # Üretim Sunucu Docker Dosyası
+│
+├── packages/
+│   ├── sdk/                          # @navisecret/sdk — Konum Paylaşım İstemci Çekirdeği
+│   └── geo-drop/                     # @navisecret/geo-drop — Kriptografik Drop Motoru
+│       └── circuits/                 # Circom zk-SNARK Yakınlık Devreleri
 │
 ├── docker/
 │   ├── nginx/
 │   │   └── default.conf              # Nginx Ters Vekil ve Güvenlik Ayarları
 │   └── init-db/
-│       └── 01-schema.sql             # PostgreSQL Başlangıç Veritabanı Şeması
+│       └── 01-schema.sql             # PostgreSQL Veritabanı Başlangıç Betiği
 │
-├── assets/                           # Vektörel Logolar, İkonlar ve Mimari Şemaları
-├── compose.yaml                      # 4 Servisli Docker Compose Tanımı
-├── Dockerfile                        # Üretim Web Önyüz Docker Dosyası
+├── assets/                           # Vektörel Şemalar, Akış Grafikleri ve Logolar
+├── compose.yaml                      # 4 Servisli Docker Compose Üretim Yığını
+├── Dockerfile                        # Nginx Web Önyüz Docker Dosyası
 └── package.json                      # Monorepo Çalışma Alanı Yapılandırması
 ```
 
 ---
 
-## Docker ile Üretim Ortamında Kurulum
+## Hızlı Başlangıç ve Dağıtım
 
-NaviSecret, tek bir Docker Compose komutuyla çalışmaya hazırdır.
+### Docker Compose ile Tek Adımda Üretim Kurulumu (Önerilen)
 
-### Gereksinimler
+NaviSecret, harici veritabanı veya BaaS hesabı gerektirmeyen bağımsız 4 konteynerlik bir küme olarak çalışır:
 
-- **Docker Engine** (v24.0 veya üzeri)
-- **Docker Compose** (v2.20 veya üzeri)
-- Açık bağlantı noktaları: `3000` (Web Arayüzü) ve `8000` (API Ağ Geçidi)
-
-### Hızlı Kurulum
-
-1. **Projeyi klonlayın:**
+1. **Depoyu klonlayın:**
    ```bash
    git clone https://github.com/ersinsandal/NaviSecret.git
    cd NaviSecret
@@ -202,19 +246,19 @@ NaviSecret, tek bir Docker Compose komutuyla çalışmaya hazırdır.
    ```bash
    cp .env.example .env
    ```
-   *`.env` dosyası içerisindeki `JWT_SECRET` ve veritabanı şifrelerini isteğinize göre güncelleyin.*
+   *`.env` dosyası içerisinden `JWT_SECRET` ve veritabanı parolalarını belirleyebilirsiniz.*
 
-3. **Tüm konteyner yığınını derleyin ve başlatın:**
+3. **Konteyner yığınını başlatın:**
    ```bash
    docker compose up -d --build
    ```
 
-4. **Konteynerlerin sağlık durumunu kontrol edin:**
+4. **Konteyner sağlık durumlarını kontrol edin:**
    ```bash
    docker compose ps
    ```
 
-   Dört servisin de **Up (healthy)** durumunda olması gerekir:
+   Dört servis de **Up (healthy)** durumuna gelecektir:
    ```
    NAME                  IMAGE                   STATUS                    PORTS
    navisecret_api        navisecret-api:latest   Up (healthy)              0.0.0.0:8000->8000/tcp
@@ -223,7 +267,7 @@ NaviSecret, tek bir Docker Compose komutuyla çalışmaya hazırdır.
    navisecret_web        navisecret-web:latest   Up (healthy)              0.0.0.0:3000->80/tcp
    ```
 
-5. **Uygulamaya bağlanın:**
+5. **Uygulamayı kullanmaya başlayın:**
    - Web Arayüzü: `http://localhost:3000`
    - API Sağlık Kontrolü: `http://localhost:8000/health`
    - Canlı WebSocket Sunucusu: `ws://localhost:8000/ws`
@@ -232,7 +276,7 @@ NaviSecret, tek bir Docker Compose komutuyla çalışmaya hazırdır.
 
 ## Yerel Geliştirme Ortamı
 
-Kodları doğrudan kendi bilgisayarınızda çalıştırmak ve geliştirmek için:
+Kod üzerinde doğrudan geliştirmeler yapmak için:
 
 ### Gereksinimler
 
@@ -246,75 +290,68 @@ Kodları doğrudan kendi bilgisayarınızda çalıştırmak ve geliştirmek içi
    pnpm install
    ```
 
-2. **API sunucusunu başlatın:**
+2. **Dahili paketleri derleyin:**
+   ```bash
+   pnpm build
+   ```
+
+3. **Fastify API Sunucusunu çalıştırın:**
    ```bash
    pnpm dev:server
    ```
-   *Fastify sunucusu hot-reload desteğiyle `http://localhost:8000` adresinde çalışır.*
+   *Sunucu `http://localhost:8000` adresinde hot reload ile açılır.*
 
-3. **Önyüz uygulamasını başlatın:**
+4. **Vite Web Arayüzünü çalıştırın:**
    ```bash
    pnpm dev:web
    ```
-   *Vite önyüzü `http://localhost:5173` adresinde açılır.*
+   *Önyüz `http://localhost:5173` adresinde başlatılır.*
 
-4. **Üretim paketlerini derleyin:**
+5. **Testleri çalıştırın:**
    ```bash
-   pnpm build:server
-   pnpm build:web
+   pnpm test
    ```
 
 ---
 
-## REST API Referansı
+## REST ve WebSocket API Referansı
 
-Korumalı tüm uç noktalar `Authorization: Bearer <token>` başlığı gerektirir.
+Korumalı tüm rotalar `Authorization: Bearer <token>` başlığı gerektirir.
 
-### Kimlik Doğrulama (`/api/auth`)
+### Kimlik Doğrulama ve Profil (`/api/auth`)
 | Yöntem | Uç Nokta | Açıklama |
 | :--- | :--- | :--- |
 | `POST` | `/api/auth/register` | Kullanıcı adı ve parola ile yeni hesap oluşturur |
-| `POST` | `/api/auth/login` | Giriş yapar ve JWT erişim belirteci döner |
-| `GET` | `/api/auth/me` | Giriş yapmış kullanıcının profilini getirir |
+| `POST` | `/api/auth/login` | Kimlik doğrular ve JWT erişim belirteci üretir |
+| `GET` | `/api/auth/me` | Giriş yapmış kullanıcının profil detaylarını getirir |
 | `POST` | `/api/auth/avatar` | Kullanıcı profil resmini günceller |
 
 ### Konum ve Görünürlük (`/api/presence`)
 | Yöntem | Uç Nokta | Açıklama |
 | :--- | :--- | :--- |
 | `POST` | `/api/presence/pulse` | Anlık konum sinyali gönderir (enlem, boylam, doğruluk) |
-| `GET` | `/api/presence/friends` | Görünür durumdaki arkadaşların anlık koordinatlarını alır |
-| `POST` | `/api/presence/ghost` | Hayalet Modunu açar veya kapatır (süre tanımlanabilir) |
+| `GET` | `/api/presence/friends` | Görünür durumdaki arkadaşların anlık konumlarını döner |
+| `POST` | `/api/presence/ghost` | Hayalet Modunu açar veya kapatır (süre kısıtlı olabilir) |
 
 ### Gizli Kapsüller (`/api/capsules`)
 | Yöntem | Uç Nokta | Açıklama |
 | :--- | :--- | :--- |
-| `POST` | `/api/capsules` | Koordinata kilitli yeni bir kapsül oluşturur |
-| `GET` | `/api/capsules/nearby` | Kullanıcının yakın çevresindeki kapsülleri listeler |
-| `POST` | `/api/capsules/:id/unlock` | Yakınlık doğrulandığında kapsül içeriğini açar |
+| `POST` | `/api/capsules` | Koordinata bağlı şifreli kapsül oluşturur |
+| `GET` | `/api/capsules/nearby` | Kullanıcının yakın çevresindeki kapsülleri getirir |
+| `POST` | `/api/capsules/:id/unlock` | Yakınlık ispatını sunarak kapsül içeriğini açar |
 
-### Sosyal ve Arkadaşlar (`/api/social`)
+### Sosyal ve Arkadaşlık (`/api/social`)
 | Yöntem | Uç Nokta | Açıklama |
 | :--- | :--- | :--- |
-| `GET` | `/api/social/friends` | Onaylanmış arkadaş listesini döner |
+| `GET` | `/api/social/friends` | Çevrimiçi durumlarıyla birlikte arkadaşları listeler |
 | `POST` | `/api/social/request` | Kullanıcı adına veya etiketine arkadaşlık isteği gönderir |
-| `POST` | `/api/social/accept` | Gelen arkadaşlık isteğini kabul eder |
+| `POST` | `/api/social/accept` | Gelen arkadaşlık davetini onaylar |
 | `POST` | `/api/social/block` | Bir kullanıcının konum erişimini engeller |
 
-### Sohbet ve Mesajlaşma (`/api/chat`)
-| Yöntem | Uç Nokta | Açıklama |
-| :--- | :--- | :--- |
-| `GET` | `/api/chat/conversations` | Aktif sohbetleri ve son mesajları listeler |
-| `GET` | `/api/chat/:userId/messages` | Belirli bir arkadaşla olan mesaj geçmişini getirir |
-| `POST` | `/api/chat/:userId/messages` | Yeni bir doğrudan mesaj gönderir |
-
----
-
-## Gerçek Zamanlı WebSocket Protokolü
-
-İstemciler yetkilendirme belirteci ile `ws://localhost:8000/ws` adresine bağlanır:
+### Canlı WebSocket Protokolü (`ws://localhost:8000/ws`)
 
 ```json
-// İstemci -> Sunucu: Konum Güncellemesi
+// İstemci -> Sunucu: Konum güncelleme sinyali
 {
   "type": "LOCATION_PULSE",
   "data": {
@@ -324,7 +361,7 @@ Korumalı tüm uç noktalar `Authorization: Bearer <token>` başlığı gerektir
   }
 }
 
-// Sunucu -> İstemci: Arkadaş Konumu Değişti
+// Sunucu -> İstemci: Arkadaşın konumu güncellendi
 {
   "event": "FRIEND_LOCATION",
   "data": {
@@ -341,16 +378,16 @@ Korumalı tüm uç noktalar `Authorization: Bearer <token>` başlığı gerektir
 
 ## Güvenlik ve Gizlilik Standartları
 
-- **Bcrypt Parola Güvenliği**: Parolalar veritabanına kaydedilmeden önce yüksek tuzlama (salt) döngüleriyle şifrelenir.
-- **İzole Ağ Mimarisi**: PostgreSQL ve Redis konteynerleri dış internete kapalıdır; yalnızca Nginx ve Fastify API dış istekleri kabul eder.
-- **Coğrafi Sınır Güvencesi**: Kapsül içeriği, kullanıcının koordinatları belirlenen açılma alanına gerçekten girmedikçe sunucu tarafından gizli tutulur.
-- **Üçüncü Taraf Takip Yok**: Uygulama içerisinde telemetri, izleme pikselleri veya reklam kütüphaneleri bulunmaz.
+- **Şirket Gözetimi Yok**: Reklam pikselleri, telemetri takipçileri veya üçüncü taraf analiz kütüphaneleri bulunmaz.
+- **İstemci Tarafı İzolasyon**: Kapsül içerikleri cihazınızdan çıkmadan şifrelenir; veritabanı yöneticisi veya ağ dinleyicileri sırları açık metin olarak göremez.
+- **Bcrypt Parola Güvenliği**: Parolalar yüksek tuzlama döngüleriyle tek yönlü şifrelenir.
+- **Güçlendirilmiş Konteyner Mimarisi**: İzole Docker köprü ağı, katı CSP başlıkları ve yetkisiz konteyner kullanıcıları.
 
 ---
 
-## Lisans
+## Lisans ve Telif Hakkı
 
-Bu proje **MIT Lisansı** ile lisanslanmıştır — ayrıntılar için [LICENSE](LICENSE) dosyasına bakabilirsiniz.
+NaviSecret açık kaynaklıdır ve **MIT Lisansı** ile lisanslanmıştır — ayrıntılar için [LICENSE](LICENSE) dosyasına bakabilirsiniz.
 
 ```
 Telif Hakkı (c) 2026 Ersin Sandal (SliferSoft)
